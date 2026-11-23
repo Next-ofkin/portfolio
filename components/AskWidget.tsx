@@ -9,7 +9,7 @@ const SUGGESTIONS = [
   "What has Excel built in fintech?",
   "Is he open to remote work?",
   "What's his main tech stack?",
-  "Tell me about Hand Graph",
+  "How did Excel find hidden debts in VerifyFlow?",
 ];
 
 // Turn links and email addresses in an answer into real links.
@@ -34,7 +34,38 @@ function Linked({ text }: { text: string }) {
   );
 }
 
-// "Ask about Excel": a small assistant that answers from what this site says.
+// An answer: text with links, and any ``` fenced code shown as a small code block. `inline code` gets a tint.
+function Answer({ text }: { text: string }) {
+  const parts = text.split(/```[\w+-]*\n?([\s\S]*?)(?:```|$)/g);
+  return (
+    <>
+      {parts.map((part, i) =>
+        i % 2 === 1 ? (
+          <pre
+            key={i}
+            className="my-2 overflow-x-auto rounded-xl border border-line bg-bg px-3 py-2.5 font-mono text-[0.8rem] leading-relaxed text-ink/90"
+          >
+            <code>{part.replace(/\n$/, "")}</code>
+          </pre>
+        ) : (
+          <span key={i} className="whitespace-pre-wrap">
+            {part.split(/(`[^`\n]+`)/g).map((seg, j) =>
+              /^`[^`]+`$/.test(seg) ? (
+                <code key={j} className="rounded bg-bg px-1 py-0.5 font-mono text-[0.85em] break-all text-accent-soft">
+                  {seg.slice(1, -1)}
+                </code>
+              ) : (
+                <Linked key={j} text={seg.replace(/\*\*(.+?)\*\*/g, "$1")} />
+              ),
+            )}
+          </span>
+        ),
+      )}
+    </>
+  );
+}
+
+// "Ask about Excel": a small assistant that answers from this site, Excel's CV and his code.
 export function AskWidget() {
   const [open, setOpen] = useState(false);
   const [msgs, setMsgs] = useState<Msg[]>([]);
@@ -127,7 +158,7 @@ export function AskWidget() {
           <div className="flex items-center justify-between border-b border-line px-5 py-4">
             <div>
               <p className="font-display text-lg font-semibold tracking-tight">Ask about Excel</p>
-              <p className="text-xs text-muted">An AI that answers from this site. It can be wrong.</p>
+              <p className="text-xs text-muted">An AI that answers from this site and Excel&apos;s code. It can be wrong.</p>
             </div>
             <button
               type="button"
@@ -148,7 +179,7 @@ export function AskWidget() {
             {msgs.length === 0 && (
               <div>
                 <p className="text-muted">
-                  Hi. Ask me anything about Excel&apos;s work, skills or projects. For anything else, the{" "}
+                  Hi. Ask me about Excel&apos;s work, skills or projects, even how he built something. For anything else, the{" "}
                   <Link href="/contact" className="underline decoration-gold underline-offset-2">
                     Contact page
                   </Link>{" "}
@@ -175,9 +206,9 @@ export function AskWidget() {
                   {m.content}
                 </p>
               ) : (
-                <p key={i} className="max-w-[92%] leading-relaxed whitespace-pre-wrap text-ink/90">
-                  {m.content ? <Linked text={m.content} /> : <span className="text-muted">Thinking…</span>}
-                </p>
+                <div key={i} className="max-w-[96%] leading-relaxed text-ink/90">
+                  {m.content ? <Answer text={m.content} /> : <span className="text-muted">Looking through Excel&apos;s work…</span>}
+                </div>
               ),
             )}
             {error && <p className="text-sm text-red-300">{error}</p>}

@@ -65,8 +65,16 @@ Home (`/`), Work (`/work`), Lab (`/lab`), About (`/about`), Contact (`/contact`)
 
 ## Site assistant
 
-"Ask about Excel" (bottom right on every page) answers visitors' questions through OpenRouter, using only the text in
-`lib/site-knowledge.ts` (the same text served at `/llms.txt`), so it can't make up facts the site doesn't state.
+"Ask about Excel" (bottom right on every page) answers visitors' questions through OpenRouter, using the site text
+(`lib/site-knowledge.ts`, also served at `/llms.txt`), the CV in `lib/cv.ts`, and Excel's own code.
+
+Before each build, `scripts/build-knowledge.mjs` downloads every repository the `GITHUB_TOKEN` can read under
+Next-ofkin (forks skipped, except strings-automation), keeps READMEs, docs and source files, strips anything that looks
+like a key, token, password or connection string, and writes `data/knowledge.json`. That file stays on the server and is
+never committed. Each question searches it and the best matches go to the model, which explains the approach, names the
+files, and shows at most a short snippet from private repositories. Redeploy to refresh it after pushing code elsewhere.
+
+`GITHUB_TOKEN` must be a fine-grained token with **Contents: Read-only** and **Metadata: Read-only** on all repositories.
 20 questions per visitor per hour, short answers, and it declines off-topic requests.
 
 ## Signature wall
