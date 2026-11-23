@@ -12,9 +12,33 @@ export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: { default: title, template: `%s | ${profile.name}` },
   description,
-  openGraph: { type: "website", url: siteUrl, siteName: profile.name, title, description },
-  twitter: { card: "summary_large_image", title, description },
+  authors: [{ name: profile.name, url: siteUrl }],
+  creator: profile.name,
+  openGraph: {
+    type: "profile",
+    firstName: "Excel",
+    lastName: "Shogbola",
+    username: profile.githubUser,
+    url: siteUrl,
+    siteName: profile.name,
+    title,
+    description,
+  },
+  twitter: { card: "summary_large_image", title, description, creator: profile.xHandle },
 };
+
+// Tells search engines and link previews who this site belongs to.
+const person = JSON.stringify({
+  "@context": "https://schema.org",
+  "@type": "Person",
+  name: profile.name,
+  jobTitle: profile.title,
+  url: siteUrl,
+  image: `${siteUrl}/excel-shogbola.webp`,
+  email: `mailto:${profile.email}`,
+  address: { "@type": "PostalAddress", addressLocality: "Lagos", addressCountry: "NG" },
+  sameAs: [profile.github, profile.linkedin, profile.x],
+});
 
 export const viewport: Viewport = {
   themeColor: "#0a0a0a",
@@ -30,6 +54,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     <html lang="en" suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: jsFlag }} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: person }} />
       </head>
       <body className="min-h-screen">{children}</body>
     </html>
