@@ -47,6 +47,8 @@ export type Project = {
   layout: "feature" | "wide" | "half" | "slim";
   span: string; // Tailwind col-span classes (md and up)
   github?: string;
+  // Private codebase: no public repo link, offer a walkthrough instead.
+  private?: boolean;
   live?: string;
 };
 
@@ -62,7 +64,7 @@ export const projects: Project[] = [
     visual: "strings",
     layout: "feature",
     span: "md:col-span-12",
-    github: "https://github.com/Next-ofkin",
+    private: true,
   },
   {
     slug: "loanpilot",
@@ -74,7 +76,7 @@ export const projects: Project[] = [
     visual: "loanpilot",
     layout: "half",
     span: "md:col-span-7",
-    github: "https://github.com/Next-ofkin",
+    private: true,
   },
   {
     slug: "appliaed",
@@ -85,7 +87,7 @@ export const projects: Project[] = [
     visual: "applied",
     layout: "half",
     span: "md:col-span-5",
-    github: "https://github.com/Next-ofkin",
+    private: true,
   },
   {
     slug: "oracle-na",
@@ -96,7 +98,7 @@ export const projects: Project[] = [
     visual: "oracle",
     layout: "half",
     span: "md:col-span-5",
-    github: "https://github.com/Next-ofkin",
+    private: true,
   },
   {
     slug: "guardrail-aml",
@@ -108,7 +110,7 @@ export const projects: Project[] = [
     visual: "guardrail",
     layout: "half",
     span: "md:col-span-7",
-    github: "https://github.com/Next-ofkin",
+    private: true,
   },
   {
     slug: "nolt-ippis",
@@ -119,7 +121,7 @@ export const projects: Project[] = [
     visual: "ippis",
     layout: "wide",
     span: "md:col-span-12",
-    github: "https://github.com/Next-ofkin",
+    private: true,
   },
   {
     slug: "sisi-igbadun",
@@ -130,7 +132,7 @@ export const projects: Project[] = [
     visual: "sisi",
     layout: "slim",
     span: "md:col-span-12",
-    github: "https://github.com/Next-ofkin",
+    private: true,
   },
 ];
 

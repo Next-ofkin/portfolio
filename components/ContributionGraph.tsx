@@ -4,7 +4,8 @@ const FILL = ["rgba(255,255,255,0.06)", "#312e81", "#4338ca", "#6366f1", "#a5a8f
 const CELL = 11;
 const GAP = 3;
 
-// Last-year calendar as a static SVG. On phones the older weeks are cut so the newest ones stay readable.
+// Last-year calendar as a static SVG. On phones the strip scrolls, and starts at the newest weeks
+// (rtl container, ltr content) so visitors see recent activity first without any script.
 export function ContributionGraph({ days, total }: { days: ContributionDay[]; total: number }) {
   const weeks = groupWeeks(days);
   const labels = monthLabels(weeks);
@@ -23,7 +24,7 @@ export function ContributionGraph({ days, total }: { days: ContributionDay[]; to
           {formatDate(days[0].date)} to {formatDate(days[days.length - 1].date)}
         </p>
       </figcaption>
-      <div className="overflow-x-auto pb-1">
+      <div className="overflow-x-auto pb-1" dir="rtl">
         <svg
           viewBox={`0 0 ${width} ${height}`}
           width={width}
@@ -31,7 +32,7 @@ export function ContributionGraph({ days, total }: { days: ContributionDay[]; to
           role="img"
           aria-label={`${total} GitHub contributions in the last year`}
           className="block min-w-[640px] max-w-full"
-          style={{ width: "100%", height: "auto" }}
+          style={{ width: "100%", height: "auto", direction: "ltr" }}
         >
           {weeks.map((w, wi) => (
             <g key={wi} transform={`translate(${wi * step} 0)`}>

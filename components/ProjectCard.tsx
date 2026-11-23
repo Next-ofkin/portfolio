@@ -6,12 +6,17 @@ const link =
   "underline decoration-line-strong decoration-2 underline-offset-[6px] transition-colors hover:decoration-gold";
 
 function Links({ p }: { p: Project }) {
-  if (!p.live && !p.github) return null;
+  if (!p.live && !p.github && !p.private) return null;
   return (
     <p className="mt-7 flex flex-wrap gap-x-7 gap-y-2 font-medium">
       {p.live && (
         <a href={p.live} target="_blank" rel="noopener" className={link}>
           Live demo<span className="sr-only"> of {p.name} (opens in a new tab)</span>
+        </a>
+      )}
+      {p.private && (
+        <a href="#contact" className={link}>
+          Ask for a walkthrough<span className="sr-only"> of {p.name}</span>
         </a>
       )}
       {p.github && (
@@ -41,7 +46,12 @@ export function ProjectCard({ p }: { p: Project }) {
 
   const text = (
     <div className={`relative z-10 flex flex-col justify-center ${slim ? "p-7 md:p-9" : big ? "p-8 md:p-14" : "p-8 md:p-10"}`}>
-      <p className="text-sm font-medium text-accent-soft">{p.kind}</p>
+      <p className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm font-medium text-accent-soft">
+        {p.kind}
+        {p.private && (
+          <span className="rounded-full border border-gold/40 px-2.5 py-0.5 text-xs text-gold">Private codebase</span>
+        )}
+      </p>
       <h3
         className={`mt-3 font-display font-semibold tracking-[-0.04em] ${
           big ? "text-4xl md:text-6xl" : slim ? "text-2xl md:text-3xl" : "text-3xl md:text-4xl"
