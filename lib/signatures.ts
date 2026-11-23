@@ -8,14 +8,16 @@ const PREFIX = process.env.SIGNATURE_PREFIX ?? "portfolio/signatures/";
 const pendingKey = (id: string) => `${PREFIX}pending/${id}.json`;
 const approvedKey = (id: string) => `${PREFIX}approved/${id}.json`;
 
-export const signaturesOpen = () => r2Configured() && (process.env.SIGNATURE_SECRET ?? "").length >= 16;
+// Review links are signed with SIGNATURE_SECRET, or with the R2 secret key when that isn't set.
+const linkSecret = () => process.env.SIGNATURE_SECRET || process.env.R2_SECRET_ACCESS_KEY || "";
+export const signaturesOpen = () => r2Configured() && linkSecret().length >= 16;
 
 // Ids sort by time: base-36 milliseconds, then random.
 export const newId = () => `${Date.now().toString(36).padStart(9, "0")}-${randomBytes(4).toString("hex")}`;
 export const validId = (id: unknown): id is string => typeof id === "string" && /^[0-9a-z]{9}-[0-9a-f]{8}$/.test(id);
 
 export function reviewToken(id: string) {
-  return createHmac("sha256", process.env.SIGNATURE_SECRET ?? "")
+  return createHmac("sha256", linkSecret())
     .update(`signature:${id}`)
     .digest("hex")
     .slice(0, 40);

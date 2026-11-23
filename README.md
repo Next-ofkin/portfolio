@@ -32,7 +32,7 @@ Copy these into Vercel (Settings, Environment Variables) and into `.env.local` f
 | `R2_ACCESS_KEY_ID` | For the signature wall | R2 API token access key (Object Read & Write on the bucket). |
 | `R2_SECRET_ACCESS_KEY` | For the signature wall | R2 API token secret. |
 | `R2_BUCKET` | For the signature wall | Bucket name, for example `portfolio-signatures`. |
-| `SIGNATURE_SECRET` | For the signature wall | Any random text of 16+ characters. Signs the review links in approval emails. |
+| `SIGNATURE_SECRET` | No | Signs the review links in approval emails. Defaults to a key derived from `R2_SECRET_ACCESS_KEY`. |
 | `SIGNATURE_PREFIX` | No | Folder inside the bucket. Defaults to `portfolio/signatures/`. |
 | `GITHUB_TOKEN` | No | Read-only token. Lifts the GitHub API rate limit and gives the contribution graph an exact source. |
 
