@@ -84,9 +84,15 @@ export const caseStudies: CaseStudy[] = [
       ],
     },
     stack: [
-      { group: "Backend", items: ["NestJS", "TypeScript", "PostgreSQL", "Prisma", "Redis", "BullMQ", "Passport + JWT"] },
+      {
+        group: "Backend",
+        items: ["NestJS", "TypeScript", "PostgreSQL", "Prisma", "Redis", "BullMQ", "Passport + JWT"],
+      },
       { group: "Frontend", items: ["React 18", "Vite", "Mantine", "TanStack Query", "Zustand", "React Flow"] },
-      { group: "Services", items: ["Resend", "Termii", "Twilio", "WhatsApp Cloud API", "Paystack", "Stripe", "Sentry"] },
+      {
+        group: "Services",
+        items: ["Resend", "Termii", "Twilio", "WhatsApp Cloud API", "Paystack", "Stripe", "Sentry"],
+      },
     ],
   },
   {

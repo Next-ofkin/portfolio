@@ -43,7 +43,17 @@ const person = JSON.stringify({
     { "@type": "Organization", name: "Lumenware Technologies", description: "Founder" },
     { "@type": "Organization", name: "NOLT Finance", description: "Fintech Engineer" },
   ],
-  knowsAbout: ["Full-stack engineering", "SaaS", "Fintech", "AI systems", "NestJS", "Next.js", "PostgreSQL", "Loan verification", "WhatsApp automation"],
+  knowsAbout: [
+    "Full-stack engineering",
+    "SaaS",
+    "Fintech",
+    "AI systems",
+    "NestJS",
+    "Next.js",
+    "PostgreSQL",
+    "Loan verification",
+    "WhatsApp automation",
+  ],
   sameAs: [profile.github, profile.linkedin, profile.x],
 });
 

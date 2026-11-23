@@ -1,5 +1,7 @@
 "use client";
 
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { nav, profile } from "@/lib/content";
 import { Monogram } from "./Monogram";
@@ -7,6 +9,7 @@ import { Monogram } from "./Monogram";
 // Full-screen menu for small screens. Escape closes it, focus moves in and back, and the page behind stops scrolling.
 export function MobileNav() {
   const [open, setOpen] = useState(false);
+  const path = usePathname();
   const toggle = useRef<HTMLButtonElement>(null);
   const firstLink = useRef<HTMLAnchorElement>(null);
 
@@ -74,14 +77,15 @@ export function MobileNav() {
             <ul className="space-y-2">
               {nav.map((item, i) => (
                 <li key={item.href}>
-                  <a
+                  <Link
                     ref={i === 0 ? firstLink : undefined}
                     href={item.href}
                     onClick={() => setOpen(false)}
-                    className="block py-2 font-display text-5xl font-semibold tracking-[-0.04em] active:text-accent-soft"
+                    aria-current={path.startsWith(item.href) ? "page" : undefined}
+                    className="block py-2 font-display text-5xl font-semibold tracking-[-0.04em] active:text-accent-soft aria-[current=page]:text-gold"
                   >
                     {item.label}
-                  </a>
+                  </Link>
                 </li>
               ))}
             </ul>

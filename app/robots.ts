@@ -1,7 +1,7 @@
 import type { MetadataRoute } from "next";
 import { siteUrl } from "@/lib/content";
 
-// Everyone may read everything. The search and AI crawlers are named so the intent is unmistakable:
+// Everyone may read everything except the private signature review page and the API. The search and AI crawlers are named so the intent is unmistakable:
 // Google (and Gemini), Bing (also DuckDuckGo, Yahoo, Ecosia, ChatGPT search, Copilot), Apple (Safari, Siri,
 // Spotlight), OpenAI, Anthropic, Perplexity and others.
 const crawlers = [
@@ -25,7 +25,7 @@ const crawlers = [
 
 export default function robots(): MetadataRoute.Robots {
   return {
-    rules: [...crawlers.map((userAgent) => ({ userAgent, allow: "/" })), { userAgent: "*", allow: "/" }],
+    rules: [...crawlers, "*"].map((userAgent) => ({ userAgent, allow: "/", disallow: ["/lab/review", "/api/"] })),
     sitemap: `${siteUrl}/sitemap.xml`,
   };
 }

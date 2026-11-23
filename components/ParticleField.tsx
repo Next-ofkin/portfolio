@@ -324,7 +324,7 @@ export function ParticleField() {
           ? "The camera didn't start. Allow camera access for this site, then try again."
           : status === "model-error"
             ? "The hand-tracking model didn't download. Check your connection, then try again."
-          : "Move through it. Tap or click to change the word.";
+            : "Move through it. Tap or click to change the word.";
 
   return (
     <div>

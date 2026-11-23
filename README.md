@@ -28,6 +28,12 @@ Copy these into Vercel (Settings, Environment Variables) and into `.env.local` f
 | `RESEND_API_KEY` | Yes | Key from resend.com. Without it the contact form returns an error. |
 | `CONTACT_TO` | No | Where messages go. Defaults to `exceldistrings@gmail.com`. |
 | `CONTACT_FROM` | No | Sender address. Defaults to `Portfolio <onboarding@resend.dev>`. |
+| `R2_ACCOUNT_ID` | For the signature wall | Cloudflare account ID. |
+| `R2_ACCESS_KEY_ID` | For the signature wall | R2 API token access key (Object Read & Write on the bucket). |
+| `R2_SECRET_ACCESS_KEY` | For the signature wall | R2 API token secret. |
+| `R2_BUCKET` | For the signature wall | Bucket name, for example `portfolio-signatures`. |
+| `SIGNATURE_SECRET` | For the signature wall | Any random text of 16+ characters. Signs the review links in approval emails. |
+| `SIGNATURE_PREFIX` | No | Folder inside the bucket. Defaults to `portfolio/signatures/`. |
 | `GITHUB_TOKEN` | No | Read-only token. Lifts the GitHub API rate limit and gives the contribution graph an exact source. |
 
 ### Sender address
@@ -50,6 +56,17 @@ Every word and project on the page lives in `lib/content.ts`: profile links, Abo
 
 - Each project's `github` link currently points to the profile. Replace it with the repository URL, and add a `live` URL where there is one.
 - Outcome lines are short paraphrases. Add real numbers (users, volume, time saved) once you are happy to publish them.
+
+## Pages
+
+Home (`/`), Work (`/work`), Lab (`/lab`), About (`/about`), Contact (`/contact`) and case studies (`/work/<slug>`).
+
+## Signature wall
+
+Visitors draw a signature on the Lab page. It is saved to R2 as pending and you get an email with a review link.
+The link opens a page with Approve and Delete buttons (opening the link alone changes nothing, so email scanners can't
+approve anything). Approved signatures float on the wall; the same link later lets you remove one. Without the R2
+variables the wall shows "The wall opens soon."
 
 ## Case studies, ticker and Lab
 

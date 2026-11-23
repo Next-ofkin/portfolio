@@ -15,7 +15,12 @@ export function Portrait() {
             "radial-gradient(55% 45% at 62% 30%, rgba(245,158,11,0.32), transparent 70%), radial-gradient(60% 55% at 25% 85%, rgba(99,102,241,0.38), transparent 70%)",
         }}
       />
-      <svg aria-hidden="true" viewBox="0 0 400 500" preserveAspectRatio="none" className="absolute inset-0 h-full w-full">
+      <svg
+        aria-hidden="true"
+        viewBox="0 0 400 500"
+        preserveAspectRatio="none"
+        className="absolute inset-0 h-full w-full"
+      >
         {strings.map((i) => (
           <path
             key={i}

@@ -44,7 +44,15 @@ export function ContributionGraph({ days, total }: { days: ContributionDay[]; to
               {w.map(
                 (d, di) =>
                   d && (
-                    <rect key={d.date} x="0" y={top + di * step} width={CELL} height={CELL} rx="2.5" fill={FILL[d.level]}>
+                    <rect
+                      key={d.date}
+                      x="0"
+                      y={top + di * step}
+                      width={CELL}
+                      height={CELL}
+                      rx="2.5"
+                      fill={FILL[d.level]}
+                    >
                       <title>{`${d.count} ${d.count === 1 ? "contribution" : "contributions"} on ${formatDate(d.date)}`}</title>
                     </rect>
                   ),

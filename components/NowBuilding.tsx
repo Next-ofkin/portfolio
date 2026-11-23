@@ -44,7 +44,10 @@ async function Ticker() {
   );
 
   return (
-    <section aria-label="Now building" className="ticker group relative -mx-5 overflow-hidden border-y border-line py-4 text-muted md:-mx-10">
+    <section
+      aria-label="Now building"
+      className="ticker group relative -mx-5 overflow-hidden border-y border-line py-4 text-muted md:-mx-10"
+    >
       <p className="absolute top-0 bottom-0 left-0 z-10 flex items-center bg-bg pr-5 pl-5 font-medium text-gold md:pl-10">
         <span className="pulse-dot mr-2.5 inline-block h-2 w-2 rounded-full bg-gold" />
         Now building

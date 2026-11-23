@@ -1,5 +1,5 @@
 import { caseStudies } from "@/lib/case-studies";
-import { about, experience, profile, projects, siteUrl } from "@/lib/content";
+import { about, experience, profile, projects, siteUrl, workshop } from "@/lib/content";
 
 // A plain-text summary for AI assistants and crawlers (the llms.txt convention), built from the same content as the site.
 export function GET() {
@@ -19,6 +19,15 @@ export function GET() {
       const live = p.live ? ` Live: ${p.live}` : "";
       return `- ${p.name} (${p.kind}): ${p.outcome} Built with ${p.stack.join(", ")}.${page}${live}`;
     }),
+    "",
+    "## In progress",
+    ...workshop.map((w) => `- ${w.name} (${w.status.toLowerCase()}): ${w.summary}`),
+    "",
+    "## Pages",
+    `- Work: ${siteUrl}/work`,
+    `- About: ${siteUrl}/about`,
+    `- Lab (games, signature wall, projects in progress): ${siteUrl}/lab`,
+    `- Contact: ${siteUrl}/contact`,
     "",
     "## Contact",
     `- Website: ${siteUrl}`,

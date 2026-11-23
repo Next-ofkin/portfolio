@@ -8,7 +8,7 @@ const HOST = "portfolio.dastrings.name.ng";
 // Every case study slug in lib/case-studies.ts becomes /work/<slug>, so new pages are picked up automatically.
 const studies = readFileSync(new URL("../lib/case-studies.ts", import.meta.url), "utf8");
 const slugs = [...studies.matchAll(/^\s{4}slug: "([^"]+)"/gm)].map((m) => m[1]);
-const PATHS = ["/", ...slugs.map((s) => `/work/${s}`), "/llms.txt"];
+const PATHS = ["/", "/work", "/lab", "/about", "/contact", ...slugs.map((s) => `/work/${s}`), "/llms.txt"];
 
 if (process.env.VERCEL_ENV !== "production") {
   console.log("IndexNow: skipped (not a production deploy)");

@@ -61,7 +61,14 @@ export function Architecture({ nodes, edges, label }: { nodes: ArchNode[]; edges
             return (
               <g key={`${from}-${to}`}>
                 <path d={d} className="v-dim v-flow" />
-                <Pulse path={d} dur={3.2} begin={i * 0.35} travel={0.4} r={4} className={b.tone === "gold" ? "v-fill-gold" : "v-fill-acc"} />
+                <Pulse
+                  path={d}
+                  dur={3.2}
+                  begin={i * 0.35}
+                  travel={0.4}
+                  r={4}
+                  className={b.tone === "gold" ? "v-fill-gold" : "v-fill-acc"}
+                />
               </g>
             );
           })}

@@ -38,7 +38,11 @@ export function RepoList({ repos, profileUrl }: { repos: Repo[]; profileUrl: str
   return (
     <div>
       <div className="flex flex-wrap items-center justify-between gap-4">
-        <div role="group" aria-label="Sort repositories" className="inline-flex rounded-full border border-line-strong p-1">
+        <div
+          role="group"
+          aria-label="Sort repositories"
+          className="inline-flex rounded-full border border-line-strong p-1"
+        >
           {(
             [
               ["recent", "Recently updated"],

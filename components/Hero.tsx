@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { profile } from "@/lib/content";
 import { Magnetic } from "./Magnetic";
 import { Parallax } from "./Parallax";
@@ -31,12 +32,12 @@ export function Hero() {
         </div>
         <div className="flex flex-wrap items-center gap-x-2">
           <Magnetic>
-            <a
-              href="#work"
+            <Link
+              href="/work"
               className="inline-flex h-12 items-center rounded-full bg-accent-strong px-7 text-base font-semibold text-white transition-colors hover:bg-accent"
             >
               View Work
-            </a>
+            </Link>
           </Magnetic>
           <Magnetic>
             <a

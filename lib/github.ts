@@ -102,7 +102,11 @@ export async function getContributions(): Promise<ContributionsResult> {
   }
 }
 
-export type Activity = { lastCommit: string | null; last30: number | null; repos: { name: string; url: string; when: string }[] };
+export type Activity = {
+  lastCommit: string | null;
+  last30: number | null;
+  repos: { name: string; url: string; when: string }[];
+};
 
 // Short, human lines for the "Now building" ticker. Private repositories never appear: the API only returns public ones.
 export async function getActivity(): Promise<Activity> {

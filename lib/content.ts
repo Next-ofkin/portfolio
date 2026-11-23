@@ -18,13 +18,10 @@ export const profile = {
 };
 
 export const nav = [
-  { label: "About", href: "/#about" },
-  { label: "Work", href: "/#work" },
-  { label: "Open source", href: "/#open-source" },
-  { label: "Lab", href: "/#lab" },
-  { label: "Skills", href: "/#skills" },
-  { label: "Experience", href: "/#experience" },
-  { label: "Contact", href: "/#contact" },
+  { label: "Work", href: "/work" },
+  { label: "Lab", href: "/lab" },
+  { label: "About", href: "/about" },
+  { label: "Contact", href: "/contact" },
 ];
 
 export const about = {
@@ -36,15 +33,7 @@ export const about = {
 };
 
 export type VisualKind =
-  | "strings"
-  | "handgraph"
-  | "verifyflow"
-  | "loanpilot"
-  | "applied"
-  | "oracle"
-  | "guardrail"
-  | "ippis"
-  | "sisi";
+  "strings" | "handgraph" | "verifyflow" | "loanpilot" | "applied" | "oracle" | "guardrail" | "ippis" | "sisi";
 
 export type Project = {
   slug: string;
@@ -185,6 +174,45 @@ export const projects: Project[] = [
 export const nowBuilding = [
   "Designing Hand Glove, a pair of wireless sensing gloves for Hand Graph",
   "Building Strings Automation, messaging for African businesses",
+];
+
+// The Lab's "In the workshop": real projects in progress. Keep each status honest and current.
+export const workshop: { name: string; status: string; summary: string; stack: string[] }[] = [
+  {
+    name: "Hand Glove",
+    status: "Design and documentation",
+    summary:
+      "A pair of wireless sensing gloves for Hand Graph: finger joints, hand rotation and thumb-to-finger contacts, each glove with its own rechargeable wrist pod.",
+    stack: ["Microcontrollers", "IMU sensors", "Wireless receiver", "Hand Graph"],
+  },
+  {
+    name: "AI Electronics Builder",
+    status: "Phase 1",
+    summary:
+      "Design, wire and test electronics in the browser. An AI planner designs the circuit, simulates it and fixes its own mistakes, starting with power banks and mini drones.",
+    stack: ["Next.js", "React Flow", "Python", "FastAPI", "OpenRouter"],
+  },
+  {
+    name: "Jarvis Career Agent",
+    status: "In development",
+    summary:
+      "Finds jobs, scores each one against your real experience and prepares the application package, with your approval before anything is sent.",
+    stack: ["Python", "FastAPI", "PostgreSQL", "Playwright"],
+  },
+  {
+    name: "Payva",
+    status: "In development",
+    summary:
+      "Commerce between buyers and sellers with protected orders, reviews, disputes and appeals, on web and mobile, plus Lighthouse, an internal operations console.",
+    stack: ["Next.js", "Expo", "Fastify", "Supabase"],
+  },
+  {
+    name: "Mementrail",
+    status: "Early build",
+    summary:
+      "An offline-first journal for text, photos and voice that turns everyday moments into useful reflections. Your journal works without the cloud.",
+    stack: ["Expo", "React Native", "SQLite", "Supabase"],
+  },
 ];
 
 export const skills: { group: string; items: string[] }[] = [

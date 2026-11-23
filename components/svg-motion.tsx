@@ -57,7 +57,19 @@ export function Flash({ at, dur, begin = 0, peak = 0.4 }: { at: number; dur: num
   );
 }
 
-export function Ripple({ cx, cy, r, grow = 18, dur = 1.6 }: { cx: number; cy: number; r: number; grow?: number; dur?: number }) {
+export function Ripple({
+  cx,
+  cy,
+  r,
+  grow = 18,
+  dur = 1.6,
+}: {
+  cx: number;
+  cy: number;
+  r: number;
+  grow?: number;
+  dur?: number;
+}) {
   return (
     <circle cx={cx} cy={cy} r={r} className="v-acc" opacity="0">
       <animate attributeName="r" values={`${r};${r + grow}`} dur={`${dur}s`} repeatCount="indefinite" />
@@ -65,4 +77,3 @@ export function Ripple({ cx, cy, r, grow = 18, dur = 1.6 }: { cx: number; cy: nu
     </circle>
   );
 }
-

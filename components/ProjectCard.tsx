@@ -21,9 +21,9 @@ function Links({ p }: { p: Project }) {
         </a>
       )}
       {p.private && !p.caseStudy && (
-        <a href="#contact" className={link}>
+        <Link href="/contact" className={link}>
           Ask for a walkthrough<span className="sr-only"> of {p.name}</span>
-        </a>
+        </Link>
       )}
       {p.github && (
         <a href={p.github} target="_blank" rel="noopener" className={link}>
@@ -65,7 +65,9 @@ export function ProjectCard({ p }: { p: Project }) {
   const slim = p.layout === "slim";
 
   const text = (
-    <div className={`relative z-10 flex flex-col justify-center ${slim ? "p-7 md:p-9" : big ? "p-8 md:p-14" : "p-8 md:p-10"}`}>
+    <div
+      className={`relative z-10 flex flex-col justify-center ${slim ? "p-7 md:p-9" : big ? "p-8 md:p-14" : "p-8 md:p-10"}`}
+    >
       <p className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm font-medium text-accent-soft">
         {p.kind}
         {p.private && (

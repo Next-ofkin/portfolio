@@ -1,8 +1,10 @@
+import Link from "next/link";
 import { about } from "@/lib/content";
 import { Portrait } from "./Portrait";
 import { Reveal } from "./Reveal";
 
-export function About() {
+export function About({ short = false }: { short?: boolean }) {
+  const paragraphs = short ? about.paragraphs.slice(0, 1) : about.paragraphs;
   return (
     <section id="about" aria-labelledby="about-title" className="scroll-mt-16 border-t border-line py-24 md:py-36">
       <div className="grid gap-12 md:grid-cols-12 md:gap-8">
@@ -17,10 +19,18 @@ export function About() {
             {about.statement}
           </h2>
           <div className="mt-10 space-y-6 text-lg leading-[1.7] text-muted">
-            {about.paragraphs.map((p) => (
+            {paragraphs.map((p) => (
               <p key={p}>{p}</p>
             ))}
           </div>
+          {short && (
+            <Link
+              href="/about"
+              className="mt-8 inline-block text-lg font-medium underline decoration-line-strong decoration-2 underline-offset-[6px] transition-colors hover:decoration-gold"
+            >
+              More about me
+            </Link>
+          )}
         </Reveal>
       </div>
     </section>

@@ -194,12 +194,7 @@ export function Strings({ height = 200 }: { height?: number }) {
   }, [height]);
 
   return (
-    <div
-      ref={wrapRef}
-      aria-hidden="true"
-      className="relative select-none"
-      style={{ height, touchAction: "pan-y" }}
-    >
+    <div ref={wrapRef} aria-hidden="true" className="relative select-none" style={{ height, touchAction: "pan-y" }}>
       <svg width="100%" height={height} className="block overflow-hidden" focusable="false">
         {SPECS.map((s, i) => (
           <path
