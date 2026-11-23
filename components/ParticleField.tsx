@@ -50,9 +50,15 @@ function wordTargets(word: string, w: number, h: number, n: number, family: stri
   const count = pts.length / 2;
   const tx = new Float32Array(n);
   const ty = new Float32Array(n);
-  const order = Array.from({ length: n }, (_, i) => i).sort(() => Math.random() - 0.5);
+  // Shuffle which particle goes where (so they cross the field when the word changes)...
+  const order = Array.from({ length: n }, (_, i) => i);
+  for (let i = n - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [order[i], order[j]] = [order[j], order[i]];
+  }
   for (let i = 0; i < n; i++) {
-    const k = count ? (order[i] % count) * 2 : 0;
+    // ...and spread the particles evenly over every point of the word, top to bottom.
+    const k = count ? Math.floor((order[i] * count) / n) * 2 : 0;
     tx[i] = (pts[k] ?? w / 2) + (Math.random() - 0.5) * gap;
     ty[i] = (pts[k + 1] ?? h / 2) + (Math.random() - 0.5) * gap;
   }
