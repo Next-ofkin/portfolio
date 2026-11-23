@@ -6,7 +6,8 @@ import "./globals.css";
 import { profile, siteUrl } from "@/lib/content";
 
 const title = `${profile.name} | ${profile.title}`;
-const description = profile.subtitle;
+// Written in the third person with name and city, because this is the sentence Google and AI assistants quote.
+const description = `${profile.name} is a full-stack engineer and AI systems builder in Lagos, Nigeria. He designs and ships production SaaS, fintech infrastructure and AI-powered products for African businesses.`;
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
@@ -36,7 +37,13 @@ const person = JSON.stringify({
   url: siteUrl,
   image: `${siteUrl}/excel-shogbola.webp`,
   email: `mailto:${profile.email}`,
+  description,
   address: { "@type": "PostalAddress", addressLocality: "Lagos", addressCountry: "NG" },
+  worksFor: [
+    { "@type": "Organization", name: "Lumenware Technologies", description: "Founder" },
+    { "@type": "Organization", name: "NOLT Finance", description: "Fintech Engineer" },
+  ],
+  knowsAbout: ["Full-stack engineering", "SaaS", "Fintech", "AI systems", "NestJS", "Next.js", "PostgreSQL", "Loan verification", "WhatsApp automation"],
   sameAs: [profile.github, profile.linkedin, profile.x],
 });
 
