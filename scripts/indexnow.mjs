@@ -1,8 +1,14 @@
+import { readFileSync } from "node:fs";
 // After a production build on Vercel, tell Bing (and other IndexNow engines) which pages exist,
 // so new or changed pages are crawled within days. Never fails the build.
 const KEY = "39aedd834eac5ca2ef6a5c3c83786e99"; // matches public/<KEY>.txt
 const HOST = "portfolio.dastrings.name.ng";
-const PATHS = ["/", "/work/strings-automation", "/work/verifyflow", "/work/hand-graph"];
+
+
+// Every case study slug in lib/case-studies.ts becomes /work/<slug>, so new pages are picked up automatically.
+const studies = readFileSync(new URL("../lib/case-studies.ts", import.meta.url), "utf8");
+const slugs = [...studies.matchAll(/^\s{4}slug: "([^"]+)"/gm)].map((m) => m[1]);
+const PATHS = ["/", ...slugs.map((s) => `/work/${s}`), "/llms.txt"];
 
 if (process.env.VERCEL_ENV !== "production") {
   console.log("IndexNow: skipped (not a production deploy)");
