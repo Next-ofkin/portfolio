@@ -259,6 +259,21 @@ body {
   }
 }
 
+/* ---------- Portrait strings: a slow sway behind the photo ---------- */
+.portrait-string {
+  vector-effect: non-scaling-stroke;
+  transform-origin: center;
+  animation: sway 6s ease-in-out infinite alternate;
+}
+@keyframes sway {
+  from {
+    transform: translateY(-6px);
+  }
+  to {
+    transform: translateY(6px);
+  }
+}
+
 /* ---------- Availability dot ---------- */
 .pulse-dot {
   animation: pulse 2.4s ease-in-out infinite;
@@ -290,7 +305,8 @@ body {
     transform: none;
     transition: none;
   }
-  .ticker-run {
+  .ticker-run,
+  .portrait-string {
     animation: none;
   }
   .ticker-mask {
