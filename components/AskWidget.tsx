@@ -1,0 +1,224 @@
+"use client";
+
+import Link from "next/link";
+import { Fragment, useEffect, useRef, useState } from "react";
+
+type Msg = { role: "user" | "assistant"; content: string };
+
+const SUGGESTIONS = [
+  "What has Excel built in fintech?",
+  "Is he open to remote work?",
+  "What's his main tech stack?",
+  "Tell me about Hand Graph",
+];
+
+// Turn links and email addresses in an answer into real links.
+function Linked({ text }: { text: string }) {
+  const parts = text.split(/(https?:\/\/[^\s)]+[^\s).,]|[\w.+-]+@[\w-]+\.[\w.]+[a-z])/gi);
+  return (
+    <>
+      {parts.map((p, i) =>
+        /^https?:\/\//.test(p) ? (
+          <a key={i} href={p} className="break-all underline decoration-gold underline-offset-2">
+            {p.replace(/^https?:\/\/(www\.)?portfolio\.dastrings\.name\.ng/, "") || "/"}
+          </a>
+        ) : /@/.test(p) && /\.\w+$/.test(p) ? (
+          <a key={i} href={`mailto:${p}`} className="underline decoration-gold underline-offset-2">
+            {p}
+          </a>
+        ) : (
+          <Fragment key={i}>{p}</Fragment>
+        ),
+      )}
+    </>
+  );
+}
+
+// "Ask about Excel": a small assistant that answers from what this site says.
+export function AskWidget() {
+  const [open, setOpen] = useState(false);
+  const [msgs, setMsgs] = useState<Msg[]>([]);
+  const [input, setInput] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const panel = useRef<HTMLDivElement>(null);
+  const field = useRef<HTMLTextAreaElement>(null);
+  const toggle = useRef<HTMLButtonElement>(null);
+  const log = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!open) return;
+    field.current?.focus();
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setOpen(false);
+        toggle.current?.focus();
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [open]);
+
+  useEffect(() => {
+    log.current?.scrollTo({ top: log.current.scrollHeight });
+  }, [msgs, busy]);
+
+  const ask = async (question: string) => {
+    const q = question.trim();
+    if (!q || busy) return;
+    setError(null);
+    setInput("");
+    const history: Msg[] = [...msgs, { role: "user", content: q }];
+    setMsgs([...history, { role: "assistant", content: "" }]);
+    setBusy(true);
+    try {
+      const res = await fetch("/api/ask", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ messages: history.slice(-8) }),
+      });
+      if (!res.ok || !res.body) {
+        const data = (await res.json().catch(() => ({}))) as { error?: string };
+        throw new Error(data.error ?? "The assistant couldn't answer right now.");
+      }
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let answer = "";
+      for (;;) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        answer += decoder.decode(value, { stream: true });
+        setMsgs([...history, { role: "assistant", content: answer }]);
+      }
+      if (!answer.trim()) throw new Error("The assistant couldn't answer right now.");
+    } catch (e) {
+      setMsgs(history.slice(0, -1));
+      setInput(q);
+      setError(e instanceof Error ? e.message : "The assistant couldn't answer right now.");
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  return (
+    <>
+      <button
+        ref={toggle}
+        type="button"
+        onClick={() => setOpen((o) => !o)}
+        aria-expanded={open}
+        aria-controls="ask-panel"
+        className={`fixed right-4 bottom-4 z-[60] flex items-center gap-2.5 rounded-full border border-line-strong bg-surface/95 px-5 py-3 font-medium shadow-[0_8px_40px_rgba(0,0,0,0.5)] backdrop-blur transition-colors hover:border-gold md:right-6 md:bottom-6 ${
+          open ? "hidden md:flex" : ""
+        }`}
+      >
+        <span aria-hidden="true" className="pulse-dot h-2 w-2 rounded-full bg-gold" />
+        {open ? "Close" : "Ask about Excel"}
+      </button>
+
+      {open && (
+        <div
+          id="ask-panel"
+          ref={panel}
+          role="dialog"
+          aria-label="Ask about Excel"
+          className="fixed inset-x-0 bottom-0 z-[60] flex max-h-[85svh] flex-col rounded-t-[1.75rem] border border-line-strong bg-surface shadow-[0_-10px_60px_rgba(0,0,0,0.6)] md:inset-x-auto md:right-6 md:bottom-24 md:h-[36rem] md:max-h-[calc(100svh-8rem)] md:w-[26rem] md:rounded-[1.75rem]"
+        >
+          <div className="flex items-center justify-between border-b border-line px-5 py-4">
+            <div>
+              <p className="font-display text-lg font-semibold tracking-tight">Ask about Excel</p>
+              <p className="text-xs text-muted">An AI that answers from this site. It can be wrong.</p>
+            </div>
+            <button
+              type="button"
+              onClick={() => {
+                setOpen(false);
+                toggle.current?.focus();
+              }}
+              className="flex h-10 w-10 items-center justify-center rounded-full border border-line-strong"
+            >
+              <span className="sr-only">Close</span>
+              <svg width="12" height="12" viewBox="0 0 14 14" aria-hidden="true">
+                <path d="M1 1L13 13M13 1L1 13" stroke="#f5f5f4" strokeWidth="1.75" strokeLinecap="round" />
+              </svg>
+            </button>
+          </div>
+
+          <div ref={log} className="min-h-40 flex-1 space-y-4 overflow-y-auto px-5 py-5" aria-live="polite">
+            {msgs.length === 0 && (
+              <div>
+                <p className="text-muted">
+                  Hi. Ask me anything about Excel&apos;s work, skills or projects. For anything else, the{" "}
+                  <Link href="/contact" className="underline decoration-gold underline-offset-2">
+                    Contact page
+                  </Link>{" "}
+                  reaches him directly.
+                </p>
+                <ul className="mt-4 flex flex-wrap gap-2">
+                  {SUGGESTIONS.map((s) => (
+                    <li key={s}>
+                      <button
+                        type="button"
+                        onClick={() => ask(s)}
+                        className="rounded-full border border-line-strong px-3.5 py-1.5 text-left text-sm transition-colors hover:border-gold hover:text-gold"
+                      >
+                        {s}
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+            {msgs.map((m, i) =>
+              m.role === "user" ? (
+                <p key={i} className="ml-auto max-w-[85%] rounded-2xl rounded-br-md bg-accent-strong px-4 py-2.5 text-white">
+                  {m.content}
+                </p>
+              ) : (
+                <p key={i} className="max-w-[92%] leading-relaxed whitespace-pre-wrap text-ink/90">
+                  {m.content ? <Linked text={m.content} /> : <span className="text-muted">Thinking…</span>}
+                </p>
+              ),
+            )}
+            {error && <p className="text-sm text-red-300">{error}</p>}
+          </div>
+
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              ask(input);
+            }}
+            className="flex items-end gap-2 border-t border-line p-3"
+          >
+            <label htmlFor="ask-input" className="sr-only">
+              Your question
+            </label>
+            <textarea
+              id="ask-input"
+              ref={field}
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && !e.shiftKey) {
+                  e.preventDefault();
+                  ask(input);
+                }
+              }}
+              rows={1}
+              maxLength={600}
+              placeholder="Ask a question"
+              className="max-h-32 min-h-12 flex-1 resize-none rounded-2xl border border-line-strong bg-bg px-4 py-3 text-ink placeholder:text-muted/70 focus:border-accent focus:outline-none"
+            />
+            <button
+              type="submit"
+              disabled={busy || !input.trim()}
+              className="h-12 rounded-full bg-accent-strong px-5 font-medium text-white transition-colors hover:bg-accent disabled:opacity-40"
+            >
+              Ask
+            </button>
+          </form>
+        </div>
+      )}
+    </>
+  );
+}

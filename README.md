@@ -34,6 +34,8 @@ Copy these into Vercel (Settings, Environment Variables) and into `.env.local` f
 | `R2_BUCKET` | For the signature wall | Bucket name, for example `portfolio-signatures`. |
 | `SIGNATURE_SECRET` | No | Signs the review links in approval emails. Defaults to a key derived from `R2_SECRET_ACCESS_KEY`. |
 | `SIGNATURE_PREFIX` | No | Folder inside the bucket. Defaults to `portfolio/signatures/`. |
+| `OPENROUTER_API_KEY` | For the assistant | OpenRouter key. Without it the "Ask about Excel" button doesn't appear. |
+| `OPENROUTER_MODEL` | No | Model for the assistant. Defaults to `meta-llama/llama-3.3-70b-instruct`. |
 | `GITHUB_TOKEN` | No | Read-only token. Lifts the GitHub API rate limit and gives the contribution graph an exact source. |
 
 ### Sender address
@@ -60,6 +62,12 @@ Every word and project on the page lives in `lib/content.ts`: profile links, Abo
 ## Pages
 
 Home (`/`), Work (`/work`), Lab (`/lab`), About (`/about`), Contact (`/contact`) and case studies (`/work/<slug>`).
+
+## Site assistant
+
+"Ask about Excel" (bottom right on every page) answers visitors' questions through OpenRouter, using only the text in
+`lib/site-knowledge.ts` (the same text served at `/llms.txt`), so it can't make up facts the site doesn't state.
+20 questions per visitor per hour, short answers, and it declines off-topic requests.
 
 ## Signature wall
 

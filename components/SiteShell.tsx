@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { AskWidget } from "./AskWidget";
 import { CursorGlow } from "./CursorGlow";
 import { Footer } from "./Footer";
 import { Header } from "./Header";
@@ -20,6 +21,7 @@ export function SiteShell({ children }: { children: ReactNode }) {
         {children}
       </main>
       <Footer />
+      {process.env.OPENROUTER_API_KEY && <AskWidget />}
     </>
   );
 }
