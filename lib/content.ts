@@ -18,12 +18,13 @@ export const profile = {
 };
 
 export const nav = [
-  { label: "About", href: "#about" },
-  { label: "Work", href: "#work" },
-  { label: "Open source", href: "#open-source" },
-  { label: "Skills", href: "#skills" },
-  { label: "Experience", href: "#experience" },
-  { label: "Contact", href: "#contact" },
+  { label: "About", href: "/#about" },
+  { label: "Work", href: "/#work" },
+  { label: "Open source", href: "/#open-source" },
+  { label: "Lab", href: "/#lab" },
+  { label: "Skills", href: "/#skills" },
+  { label: "Experience", href: "/#experience" },
+  { label: "Contact", href: "/#contact" },
 ];
 
 export const about = {
@@ -34,7 +35,16 @@ export const about = {
   ],
 };
 
-export type VisualKind = "strings" | "loanpilot" | "applied" | "oracle" | "guardrail" | "ippis" | "sisi";
+export type VisualKind =
+  | "strings"
+  | "handgraph"
+  | "verifyflow"
+  | "loanpilot"
+  | "applied"
+  | "oracle"
+  | "guardrail"
+  | "ippis"
+  | "sisi";
 
 export type Project = {
   slug: string;
@@ -50,6 +60,10 @@ export type Project = {
   // Private codebase: no public repo link, offer a walkthrough instead.
   private?: boolean;
   live?: string;
+  // Has a case-study page at /work/<slug> (see lib/case-studies.ts).
+  caseStudy?: boolean;
+  // Short proof points shown on the card.
+  facts?: string[];
 };
 
 // Outcome lines paraphrase each project's description. Add real numbers and live links when you have them.
@@ -59,24 +73,43 @@ export const projects: Project[] = [
     name: "Strings Automation",
     kind: "Multi-tenant messaging SaaS",
     outcome:
-      "One platform where African businesses message their customers by email, SMS and WhatsApp, with every tenant's data kept separate.",
-    stack: ["NestJS", "React", "PostgreSQL", "WhatsApp API"],
+      "One platform where African businesses message their customers by email, SMS and WhatsApp, with a drag-and-drop automation builder and every tenant's data kept separate.",
+    stack: ["NestJS", "React", "PostgreSQL", "BullMQ", "WhatsApp API"],
     visual: "strings",
     layout: "feature",
     span: "md:col-span-12",
     private: true,
+    caseStudy: true,
+    facts: ["3 channels", "HubSpot + Salesforce sync", "Paystack + Stripe billing"],
   },
   {
-    slug: "loanpilot",
-    name: "LoanPilot",
-    kind: "AI agent for loan verification and credit decisions",
+    slug: "hand-graph",
+    name: "Hand Graph",
+    kind: "Codebase explorer you control with your hands",
     outcome:
-      "An AI autopilot that verifies a borrower's identity and supports the credit decision. Built for the Qwen Cloud Global AI Hackathon.",
-    stack: ["NestJS", "Baileys", "Prisma", "Dojah", "Prembly"],
-    visual: "loanpilot",
+      "Turns any GitHub repo into a living map of its files, explained in plain English. Pinch, turn and throw files to your phone with your hands in the air, or walk through it as a 3D code city.",
+    stack: ["JavaScript", "MediaPipe", "Three.js", "Supabase Realtime", "OpenRouter"],
+    visual: "handgraph",
+    layout: "wide",
+    span: "md:col-span-12",
+    private: true,
+    live: "https://hand-graph.vercel.app",
+    caseStudy: true,
+    facts: ["Webcam hand control", "3D code city", "AI presenter"],
+  },
+  {
+    slug: "verifyflow",
+    name: "VerifyFlow",
+    kind: "Loan verification for salary lenders",
+    outcome:
+      "Upload a bank statement and payslip; get hidden debts, true debt-to-income, the maximum safe loan and a risk level in minutes.",
+    stack: ["Python", "FastAPI", "Next.js", "Postgres (Neon)", "Cloudflare R2"],
+    visual: "verifyflow",
     layout: "half",
     span: "md:col-span-7",
     private: true,
+    caseStudy: true,
+    facts: ["330 tests", "₦143,000/mo hidden debt caught in the demo case"],
   },
   {
     slug: "appliaed",
@@ -101,6 +134,29 @@ export const projects: Project[] = [
     private: true,
   },
   {
+    slug: "nolt-ippis",
+    name: "NOLT IPPIS Intelligence",
+    kind: "AI-powered payroll and loan eligibility platform",
+    outcome: "Reads IPPIS payroll data to work out who is eligible for a loan, and for how much.",
+    stack: ["Next.js", "Supabase", "Claude API", "PostgreSQL"],
+    visual: "ippis",
+    layout: "half",
+    span: "md:col-span-7",
+    private: true,
+  },
+  {
+    slug: "loanpilot",
+    name: "LoanPilot",
+    kind: "AI agent for loan verification and credit decisions",
+    outcome:
+      "An AI autopilot that verifies a borrower's identity and supports the credit decision. Built for the Qwen Cloud Global AI Hackathon.",
+    stack: ["NestJS", "Baileys", "Prisma", "Dojah", "Prembly"],
+    visual: "loanpilot",
+    layout: "slim",
+    span: "md:col-span-12",
+    private: true,
+  },
+  {
     slug: "guardrail-aml",
     name: "GuardRail AML",
     kind: "CBN-compliant AML/CFT SaaS",
@@ -108,18 +164,7 @@ export const projects: Project[] = [
       "Helps Nigerian financial institutions meet CBN anti-money-laundering and counter-terrorism-financing rules.",
     stack: ["Fastify", "PostgreSQL", "Redis", "Python AI"],
     visual: "guardrail",
-    layout: "half",
-    span: "md:col-span-7",
-    private: true,
-  },
-  {
-    slug: "nolt-ippis",
-    name: "NOLT IPPIS Intelligence",
-    kind: "AI-powered payroll and loan eligibility platform",
-    outcome: "Reads IPPIS payroll data to work out who is eligible for a loan, and for how much.",
-    stack: ["Next.js", "Supabase", "Claude API", "PostgreSQL"],
-    visual: "ippis",
-    layout: "wide",
+    layout: "slim",
     span: "md:col-span-12",
     private: true,
   },
@@ -136,6 +181,12 @@ export const projects: Project[] = [
   },
 ];
 
+// Shown in the "Now building" ticker alongside live GitHub activity. Keep these true and current.
+export const nowBuilding = [
+  "Designing Hand Glove, a pair of wireless sensing gloves for Hand Graph",
+  "Building Strings Automation, messaging for African businesses",
+];
+
 export const skills: { group: string; items: string[] }[] = [
   { group: "Frontend", items: ["Next.js", "React", "Vite"] },
   { group: "Backend", items: ["NestJS", "Fastify", "Node.js"] },
@@ -149,6 +200,6 @@ export const experience: { org: string; role: string; detail: string }[] = [
   {
     org: "Open source and personal products",
     role: "Independent",
-    detail: "Including autoApply-ng and VerifyFlow.",
+    detail: "Including Hand Graph, VerifyFlow and autoApply-ng.",
   },
 ];

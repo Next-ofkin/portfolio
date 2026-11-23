@@ -1,3 +1,4 @@
+import Link from "next/link";
 import type { Project } from "@/lib/content";
 import { ProjectVisual } from "./ProjectVisual";
 import { Spotlight } from "./Spotlight";
@@ -6,15 +7,20 @@ const link =
   "underline decoration-line-strong decoration-2 underline-offset-[6px] transition-colors hover:decoration-gold";
 
 function Links({ p }: { p: Project }) {
-  if (!p.live && !p.github && !p.private) return null;
+  if (!p.live && !p.github && !p.private && !p.caseStudy) return null;
   return (
     <p className="mt-7 flex flex-wrap gap-x-7 gap-y-2 font-medium">
+      {p.caseStudy && (
+        <Link href={`/work/${p.slug}`} className={link}>
+          Read the case study<span className="sr-only">: {p.name}</span>
+        </Link>
+      )}
       {p.live && (
         <a href={p.live} target="_blank" rel="noopener" className={link}>
-          Live demo<span className="sr-only"> of {p.name} (opens in a new tab)</span>
+          Try it live<span className="sr-only">: {p.name} (opens in a new tab)</span>
         </a>
       )}
-      {p.private && (
+      {p.private && !p.caseStudy && (
         <a href="#contact" className={link}>
           Ask for a walkthrough<span className="sr-only"> of {p.name}</span>
         </a>
@@ -25,6 +31,20 @@ function Links({ p }: { p: Project }) {
         </a>
       )}
     </p>
+  );
+}
+
+function Facts({ items }: { items?: string[] }) {
+  if (!items?.length) return null;
+  return (
+    <ul className="mt-5 flex flex-wrap gap-x-5 gap-y-1.5 text-sm text-gold" aria-label="Highlights">
+      {items.map((f) => (
+        <li key={f} className="flex items-center gap-2">
+          <span aria-hidden="true" className="h-1 w-1 rounded-full bg-gold" />
+          {f}
+        </li>
+      ))}
+    </ul>
   );
 }
 
@@ -60,6 +80,7 @@ export function ProjectCard({ p }: { p: Project }) {
         {p.name}
       </h3>
       <p className={`mt-4 max-w-xl text-muted ${slim ? "text-base" : "text-lg"}`}>{p.outcome}</p>
+      <Facts items={p.facts} />
       <Stack items={p.stack} />
       <Links p={p} />
     </div>

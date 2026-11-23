@@ -143,3 +143,13 @@ export function monthLabels(weeks: (ContributionDay | null)[][]): string[] {
     return MONTHS[month];
   });
 }
+
+// "today", "yesterday", "5 days ago", "3 weeks ago", "2 months ago"
+export function ago(thenMs: number, nowMs: number): string {
+  const days = Math.max(0, Math.floor((nowMs - thenMs) / DAY));
+  if (days === 0) return "today";
+  if (days === 1) return "yesterday";
+  if (days < 14) return `${days} days ago`;
+  if (days < 60) return `${Math.round(days / 7)} weeks ago`;
+  return `${Math.round(days / 30)} months ago`;
+}

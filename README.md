@@ -5,6 +5,10 @@ Cinematic dark portfolio for Excel Shogbola (DaStrings). Next.js App Router, Typ
 - Live GitHub repositories and contribution graph for `Next-ofkin`
 - Contact form that emails `exceldistrings@gmail.com` through Resend
 - Hero with six plucked strings that respond to the pointer or a tap
+- Animated project scenes that play only while they are on screen
+- Case-study pages at `/work/<slug>` with animated architecture diagrams
+- A "Now building" ticker fed by live GitHub activity
+- A Lab with a particle field you can push around, by pointer or with your hands through the webcam
 
 ## Run it
 
@@ -47,10 +51,17 @@ Every word and project on the page lives in `lib/content.ts`: profile links, Abo
 - Each project's `github` link currently points to the profile. Replace it with the repository URL, and add a `live` URL where there is one.
 - Outcome lines are short paraphrases. Add real numbers (users, volume, time saved) once you are happy to publish them.
 
+## Case studies, ticker and Lab
+
+- Case studies live in `lib/case-studies.ts`. A project gets a page when its entry in `lib/content.ts` has `caseStudy: true` and a matching slug in that file.
+- The ticker mixes `nowBuilding` in `lib/content.ts` (keep those lines current) with live GitHub data. Only public repositories appear.
+- The Lab's hand mode downloads MediaPipe from jsDelivr and its hand model from Google the first time a visitor presses "Use your hands". The video never leaves the browser.
+
 ## Where things are
 
 - `components/Hero.tsx` and `components/Strings.tsx`: the hero and the string simulation. With reduced motion switched on the strings stay still.
-- `components/ProjectVisual.tsx`: one SVG scene per project.
+- `components/ProjectVisual.tsx`: one animated SVG scene per project. `components/LiveSvg.tsx` runs a scene's clock only while it is on screen.
+- `components/ParticleField.tsx` and `lib/hands.ts`: the Lab.
 - `lib/github.ts` and `lib/github-parse.ts`: repository list and contribution data. Contributions try the GraphQL API (with a token), then a public mirror, then GitHub's own contributions page.
 - `app/api/contact/route.ts`: validation, honeypot, time check, per-IP rate limit and the Resend call.
 - `app/globals.css`: colors, fonts, grain and motion.

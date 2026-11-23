@@ -1,6 +1,7 @@
 import { cacheLife } from "next/cache";
 import { profile } from "./content";
 import {
+  ago,
   normalizeRepos,
   parseContributionsHtml,
   parseGraphql,
@@ -99,4 +100,33 @@ export async function getContributions(): Promise<ContributionsResult> {
     cacheLife(FAILED_LIFE);
     return { ok: false };
   }
+}
+
+export type Activity = { lastCommit: string | null; last30: number | null; repos: { name: string; url: string; when: string }[] };
+
+// Short, human lines for the "Now building" ticker. Private repositories never appear: the API only returns public ones.
+export async function getActivity(): Promise<Activity> {
+  "use cache";
+  cacheLife("hours");
+  const [repos, contrib] = await Promise.all([getRepos(), getContributions()]);
+  const now = Date.now();
+  let lastCommit: string | null = null;
+  let last30: number | null = null;
+  if (contrib.ok) {
+    const days = contrib.days;
+    for (let i = days.length - 1; i >= 0; i--) {
+      if (days[i].count > 0) {
+        lastCommit = ago(Date.parse(days[i].date), Date.parse(days[days.length - 1].date));
+        break;
+      }
+    }
+    last30 = days.slice(-30).reduce((s, d) => s + d.count, 0);
+  }
+  return {
+    lastCommit,
+    last30,
+    repos: repos.ok
+      ? repos.repos.slice(0, 4).map((r) => ({ name: r.name, url: r.url, when: ago(Date.parse(r.pushedAt), now) }))
+      : [],
+  };
 }

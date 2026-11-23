@@ -6,6 +6,8 @@ import { Footer } from "@/components/Footer";
 import { GithubSection } from "@/components/GithubSection";
 import { Header } from "@/components/Header";
 import { Hero } from "@/components/Hero";
+import { Lab } from "@/components/Lab";
+import { NowBuilding } from "@/components/NowBuilding";
 import { Skills } from "@/components/Skills";
 import { Work } from "@/components/Work";
 
@@ -23,9 +25,11 @@ export default function Home() {
       <Header />
       <main id="main" className="relative z-10 mx-auto max-w-7xl px-5 md:px-10">
         <Hero />
+        <NowBuilding />
         <About />
         <Work />
         <GithubSection />
+        <Lab />
         <Skills />
         <Experience />
         <Contact />
