@@ -43,6 +43,8 @@ function codeContext(hits: Hit[]) {
   );
 }
 
+export const maxDuration = 60;
+
 const WINDOW_MS = 60 * 60 * 1000;
 const MAX_PER_WINDOW = 20;
 const DAILY_CAP = 400; // per server instance, a backstop against abuse
@@ -114,7 +116,7 @@ async function handle(request: Request) {
           ...messages,
         ],
       }),
-      signal: AbortSignal.timeout(30_000),
+      signal: AbortSignal.timeout(55_000),
     });
   } catch (e) {
     console.error("Assistant: OpenRouter unreachable", e);
@@ -133,33 +135,46 @@ async function handle(request: Request) {
   const stream = new ReadableStream<Uint8Array>({
     async pull(controller) {
       let buffer = "";
-      for (;;) {
-        const { done, value } = await reader.read();
-        if (done) break;
-        buffer += decoder.decode(value, { stream: true });
-        const lines = buffer.split("\n");
-        buffer = lines.pop() ?? "";
-        for (const line of lines) {
-          if (!line.startsWith("data:")) continue;
-          const data = line.slice(5).trim();
-          if (data === "[DONE]") {
-            controller.close();
-            return;
-          }
-          try {
-            const json = JSON.parse(data);
+      let sent = false;
+      try {
+        for (;;) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          buffer += decoder.decode(value, { stream: true });
+          const lines = buffer.split("\n");
+          buffer = lines.pop() ?? "";
+          for (const line of lines) {
+            if (!line.startsWith("data:")) continue;
+            const data = line.slice(5).trim();
+            if (data === "[DONE]") {
+              controller.close();
+              return;
+            }
+            let json: { error?: unknown; choices?: { delta?: { content?: unknown } }[] } | null = null;
+            try {
+              json = JSON.parse(data);
+            } catch {
+              continue; // keep-alive comments and partial lines
+            }
             if (json?.error) {
               console.error("Assistant: OpenRouter stream error", json.error);
-              controller.enqueue(encoder.encode(`\n[The assistant hit a problem: ${reason(JSON.stringify(json))}]`));
+              controller.enqueue(encoder.encode(`${sent ? "\n\n" : ""}[The assistant hit a problem: ${reason(JSON.stringify(json))}]`));
               controller.close();
               return;
             }
             const text = json?.choices?.[0]?.delta?.content;
-            if (typeof text === "string" && text) controller.enqueue(encoder.encode(text));
-          } catch {
-            /* keep-alive comments and partial lines are skipped */
+            if (typeof text === "string" && text) {
+              controller.enqueue(encoder.encode(text));
+              sent = true;
+            }
           }
         }
+      } catch (e) {
+        // A slow or dropped connection: say so instead of crashing the response.
+        console.error("Assistant: stream interrupted", e);
+        controller.enqueue(
+          encoder.encode(`${sent ? "\n\n" : ""}[The answer was cut off because the AI took too long. Please ask again.]`),
+        );
       }
       controller.close();
     },
