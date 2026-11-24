@@ -6,10 +6,31 @@ import { siteKnowledge } from "@/lib/site-knowledge";
 // The site assistant. Answers questions about Excel from the site's text, his CV and his own code (searched from the
 // index built at deploy), through OpenRouter.
 //   OPENROUTER_API_KEY  required. Without it the assistant button doesn't appear.
-//   OPENROUTER_MODEL    optional. Defaults to meta-llama/llama-3.3-70b-instruct (cheap and capable).
+//   OPENROUTER_MODEL    optional. A paid model to try first. Without it, OpenRouter's free models are used.
+// If a model is out of credit, rate-limited or gone, the next free model is tried (like Hand Graph does).
 
-const MODEL = process.env.OPENROUTER_MODEL || "meta-llama/llama-3.3-70b-instruct";
+const MODEL = process.env.OPENROUTER_MODEL || "";
 const URL = process.env.OPENROUTER_API_URL || "https://openrouter.ai/api/v1/chat/completions";
+const MODELS_URL = URL.replace(/\/chat\/completions$/, "/models");
+
+let freeCache = { at: 0, list: [] as string[] };
+async function freeModels(key: string): Promise<string[]> {
+  if (Date.now() - freeCache.at < 3_600_000 && freeCache.list.length) return freeCache.list;
+  let list: string[] = [];
+  try {
+    const r = await fetch(MODELS_URL, { headers: { Authorization: `Bearer ${key}` }, signal: AbortSignal.timeout(8000) });
+    const data = ((await r.json()) as { data?: { id?: string; context_length?: number }[] }).data ?? [];
+    list = data
+      .filter((m) => typeof m.id === "string" && m.id.endsWith(":free") && (m.context_length ?? 0) >= 32_000)
+      .map((m) => m.id as string)
+      // instruction-tuned general models first; they answer most cleanly
+      .sort((a, b) => Number(/instruct|chat|llama|qwen|gemma|mistral/i.test(b)) - Number(/instruct|chat|llama|qwen|gemma|mistral/i.test(a)));
+  } catch {
+    /* fall back to OpenRouter's free router below */
+  }
+  freeCache = { at: Date.now(), list: [...list.slice(0, 5), "openrouter/free"] };
+  return freeCache.list;
+}
 
 const SYSTEM = `You are the assistant on ${profile.name}'s portfolio website (${siteUrl}). Visitors are mostly recruiters, founders and engineers.
 
@@ -95,37 +116,48 @@ async function handle(request: Request) {
   const asked = messages.filter((m) => m.role === "user").slice(-2).map((m) => m.content).join(" ");
   const context = codeContext(searchCode(asked, 7));
 
-  let upstream: Response;
-  try {
-    upstream = await fetch(URL, {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${key}`,
-        "Content-Type": "application/json",
-        "HTTP-Referer": siteUrl,
-        "X-Title": `${profile.name} portfolio`,
-      },
-      body: JSON.stringify({
-        model: MODEL,
-        stream: true,
-        max_tokens: 700,
-        temperature: 0.3,
-        messages: [
-          { role: "system", content: SYSTEM },
-          { role: "system", content: context },
-          ...messages,
-        ],
-      }),
-      signal: AbortSignal.timeout(55_000),
-    });
-  } catch (e) {
-    console.error("Assistant: OpenRouter unreachable", e);
-    return fail("The assistant couldn't answer right now. Please try again in a moment.", 502);
+  const candidates = [...(MODEL ? [MODEL] : []), ...(await freeModels(key))].slice(0, 6);
+  let upstream: Response | null = null;
+  const errors: string[] = [];
+  for (const model of candidates) {
+    try {
+      const res = await fetch(URL, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${key}`,
+          "Content-Type": "application/json",
+          "HTTP-Referer": siteUrl,
+          "X-Title": `${profile.name} portfolio`,
+        },
+        body: JSON.stringify({
+          model,
+          stream: true,
+          max_tokens: 700,
+          temperature: 0.3,
+          messages: [
+            { role: "system", content: SYSTEM },
+            { role: "system", content: context },
+            ...messages,
+          ],
+        }),
+        signal: AbortSignal.timeout(55_000),
+      });
+      if (res.ok && res.body) {
+        upstream = res;
+        break;
+      }
+      const detail = await res.text().catch(() => "");
+      errors.push(`${model}: ${res.status} ${reason(detail)}`);
+      // out of credit, rate-limited, unavailable or unknown model: try the next one
+      if (![400, 402, 403, 404, 408, 429, 500, 502, 503].includes(res.status)) break;
+    } catch (e) {
+      errors.push(`${model}: ${e instanceof Error ? e.message : "failed"}`);
+    }
   }
-  if (!upstream.ok || !upstream.body) {
-    const detail = await upstream.text().catch(() => "");
-    console.error("Assistant: OpenRouter returned", upstream.status, detail);
-    return fail(`The assistant couldn't answer right now (OpenRouter ${upstream.status}: ${reason(detail)}).`, 502);
+  if (!upstream?.body) {
+    console.error("Assistant: no model answered", errors);
+    const last = errors[errors.length - 1] ?? "no details";
+    return fail(`The assistant couldn't answer right now (${last}). Please try again shortly.`, 502);
   }
 
   // Turn OpenRouter's server-sent events into a plain text stream of the answer.
@@ -218,7 +250,7 @@ export async function GET() {
     {
       openrouterKey: process.env.OPENROUTER_API_KEY ? "set" : "missing",
       githubToken: process.env.GITHUB_TOKEN ? "set" : "missing",
-      model: MODEL,
+      model: MODEL || "free models (auto)",
       cv: cv.trim() ? "loaded" : "empty",
       codeIndex: index,
     },

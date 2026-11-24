@@ -35,7 +35,7 @@ Copy these into Vercel (Settings, Environment Variables) and into `.env.local` f
 | `SIGNATURE_SECRET` | No | Signs the review links in approval emails. Defaults to a key derived from `R2_SECRET_ACCESS_KEY`. |
 | `SIGNATURE_PREFIX` | No | Folder inside the bucket. Defaults to `portfolio/signatures/`. |
 | `OPENROUTER_API_KEY` | For the assistant | OpenRouter key. Without it the "Ask about Excel" button doesn't appear. |
-| `OPENROUTER_MODEL` | No | Model for the assistant. Defaults to `meta-llama/llama-3.3-70b-instruct`. |
+| `OPENROUTER_MODEL` | No | A paid model to try first. Without it the assistant uses OpenRouter's free models, and it falls back to them whenever a model is out of credit or busy. |
 | `GITHUB_TOKEN` | No | Read-only token. Lifts the GitHub API rate limit and gives the contribution graph an exact source. |
 
 ### Sender address
