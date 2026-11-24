@@ -28,12 +28,12 @@ export const about = {
   statement: "I build tools that actually get used.",
   paragraphs: [
     "I'm a full-stack engineer in Lagos. I founded Lumenware Technologies, and I'm building Strings Automation, a multi-tenant messaging SaaS for email, SMS and WhatsApp.",
-    "At NOLT Finance I work on fintech: loan and payroll systems for real lending teams. Most of what I ship sits on NestJS, Next.js, Fastify, PostgreSQL, Redis and Supabase, with AI APIs (Claude, OpenRouter), Playwright and BullMQ doing the heavy lifting.",
+    "At NOLT Finance I'm a verification officer and software developer: I verify borrowers in the field and build the tools the lending team uses every day. Most of what I ship sits on NestJS, Next.js, Fastify, PostgreSQL, Redis and Supabase, with AI APIs (Claude, OpenRouter), Playwright and BullMQ doing the heavy lifting.",
   ],
 };
 
 export type VisualKind =
-  "strings" | "handgraph" | "verifyflow" | "loanpilot" | "applied" | "oracle" | "guardrail" | "ippis" | "sisi";
+  "strings" | "handgraph" | "verifyflow" | "loanpilot" | "applied" | "oracle" | "guardrail" | "ippis" | "sisi" | "autoapply" | "dastrings" | "benniepocket";
 
 export type Project = {
   slug: string;
@@ -62,14 +62,14 @@ export const projects: Project[] = [
     name: "Strings Automation",
     kind: "Multi-tenant messaging SaaS",
     outcome:
-      "One platform where African businesses message their customers by email, SMS and WhatsApp, with a drag-and-drop automation builder and every tenant's data kept separate.",
+      "One platform where African businesses message their customers by email, SMS and WhatsApp, with every tenant's data kept separate. I led a team of three and built the frontend.",
     stack: ["NestJS", "React", "PostgreSQL", "BullMQ", "WhatsApp API"],
     visual: "strings",
     layout: "feature",
     span: "md:col-span-12",
     private: true,
     caseStudy: true,
-    facts: ["3 channels", "HubSpot + Salesforce sync", "Paystack + Stripe billing"],
+    facts: ["3 channels", "Team of 3, I led it", "Built the frontend"],
   },
   {
     slug: "hand-graph",
@@ -134,6 +134,31 @@ export const projects: Project[] = [
     private: true,
   },
   {
+    slug: "autoapply-ng",
+    name: "autoApply-ng",
+    kind: "Job application automation",
+    outcome:
+      "Pulls jobs from five job boards, scores each one against your CV and sends WhatsApp alerts every six hours. Version one cut AI cost with a two-layer match: local embeddings filter first, then Llama 3.3 70B explains the fit.",
+    stack: ["Next.js 16", "NestJS 11", "BullMQ", "Redis", "Supabase", "Turborepo"],
+    visual: "autoapply",
+    layout: "half",
+    span: "md:col-span-7",
+    github: "https://github.com/Next-ofkin/autoApply-ng",
+  },
+  {
+    slug: "dastrings",
+    name: "DaStrings",
+    kind: "Web design studio and template platform",
+    outcome:
+      "Businesses preview a template site and claim it, then edit it and see their orders themselves. Social posts go out automatically, with an email alert on every success or failure.",
+    stack: ["Next.js", "Vercel", "Resend", "Metricool"],
+    visual: "dastrings",
+    layout: "half",
+    span: "md:col-span-5",
+    private: true,
+    live: "https://dastrings.name.ng",
+  },
+  {
     slug: "loanpilot",
     name: "LoanPilot",
     kind: "AI agent for loan verification and credit decisions",
@@ -153,6 +178,17 @@ export const projects: Project[] = [
       "Helps Nigerian financial institutions meet CBN anti-money-laundering and counter-terrorism-financing rules.",
     stack: ["Fastify", "PostgreSQL", "Redis", "Python AI"],
     visual: "guardrail",
+    layout: "slim",
+    span: "md:col-span-12",
+    private: true,
+  },
+  {
+    slug: "benniepocket",
+    name: "Benniepocket",
+    kind: "Multi-tenant savings SaaS",
+    outcome: "Savings software built for many businesses at once, each with its own separate data.",
+    stack: [],
+    visual: "benniepocket",
     layout: "slim",
     span: "md:col-span-12",
     private: true,
@@ -193,19 +229,13 @@ export const workshop: { name: string; status: string; summary: string; stack: s
     stack: ["Next.js", "React Flow", "Python", "FastAPI", "OpenRouter"],
   },
   {
-    name: "Jarvis Career Agent",
+    name: "JARVIS",
     status: "In development",
     summary:
-      "Finds jobs, scores each one against your real experience and prepares the application package, with your approval before anything is sent.",
+      "A personal AI assistant running on a Linux VPS. Its career agent finds jobs, scores each one against real experience and prepares the application, with approval before anything is sent.",
     stack: ["Python", "FastAPI", "PostgreSQL", "Playwright"],
   },
-  {
-    name: "Payva",
-    status: "In development",
-    summary:
-      "Commerce between buyers and sellers with protected orders, reviews, disputes and appeals, on web and mobile, plus Lighthouse, an internal operations console.",
-    stack: ["Next.js", "Expo", "Fastify", "Supabase"],
-  },
+
   {
     name: "Mementrail",
     status: "Early build",
@@ -216,18 +246,39 @@ export const workshop: { name: string; status: string; summary: string; stack: s
 ];
 
 export const skills: { group: string; items: string[] }[] = [
-  { group: "Frontend", items: ["Next.js", "React", "Vite"] },
-  { group: "Backend", items: ["NestJS", "Fastify", "Node.js"] },
-  { group: "Data and infrastructure", items: ["PostgreSQL", "Supabase", "Prisma", "Redis", "Railway"] },
-  { group: "AI and automation", items: ["Claude API", "OpenRouter", "Playwright", "BullMQ", "Baileys"] },
+  { group: "Frontend", items: ["Next.js", "React", "TypeScript", "Tailwind CSS", "Vite"] },
+  { group: "Backend", items: ["NestJS", "Fastify", "Node.js", "Python"] },
+  { group: "Data and infrastructure", items: ["PostgreSQL", "Supabase", "Redis", "Docker", "Railway"] },
+  { group: "AI and automation", items: ["Claude API", "OpenRouter", "Embeddings", "BullMQ", "Playwright"] },
 ];
 
-export const experience: { org: string; role: string; detail: string }[] = [
-  { org: "Lumenware Technologies", role: "Founder", detail: "Building SaaS products." },
-  { org: "NOLT Finance", role: "Fintech Engineer", detail: "Loan systems, IPPIS and credit tools." },
+export const experience: { org: string; role: string; period: string; detail: string }[] = [
   {
-    org: "Open source and personal products",
-    role: "Independent",
-    detail: "Including Hand Graph, VerifyFlow and autoApply-ng.",
+    org: "NOLT Finance",
+    role: "Verification Officer & Software Developer",
+    period: "2024 to now",
+    detail:
+      "Built internal tools for loan operations (verification workflows, automated borrower emails, digital certificates), cutting manual processing by about 30%. Field verification and credit assessment on IPPIS and Remita salary loans.",
+  },
+  {
+    org: "Lumenware Technologies",
+    role: "Founder & Lead Developer",
+    period: "2024 to now",
+    detail:
+      "Leads product and engineering across its SaaS products, including the Strings Automation team. Also runs DaStrings, a web design studio for small businesses.",
+  },
+  {
+    org: "Payva Innovations",
+    role: "Full Stack Developer (contract)",
+    period: "Feb 2026 to now",
+    detail:
+      "Moved the escrow backend into a standalone NestJS service on Supabase with scheduled pg_cron jobs, and built an admin platform with five staff roles, dispute resolution and audit logs.",
+  },
+  {
+    org: "Earlier",
+    role: "Data and digital marketing",
+    period: "2020 to 2023",
+    detail:
+      "Data analyst and digital manager at RCCG Throne of Mercy (online engagement up about 50%), and digital marketing strategist at Yessboss Clothing (online sales up about 40%).",
   },
 ];

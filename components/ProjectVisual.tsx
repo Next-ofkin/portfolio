@@ -622,6 +622,132 @@ function Sisi() {
   );
 }
 
+/* ---------- autoApply-ng: five job boards feed a cheap filter, then the AI, then a WhatsApp alert ---------- */
+function AutoApply() {
+  const D = 4.5;
+  const boards = [50, 100, 150, 200, 250];
+  return (
+    <>
+      {boards.map((y, i) => {
+        const d = `M118 ${y} C150 ${y} 160 150 196 150`;
+        return (
+          <g key={y}>
+            <rect x="30" y={y - 15} width="88" height="30" rx="8" className="v-dim" />
+            <path d={`M44 ${y} H96`} className="v-dim" />
+            <path d={d} className="v-dim v-flow" />
+            <Pulse path={d} dur={D} begin={i * 0.45} travel={0.3} r={3} className="v-fill-dim" />
+          </g>
+        );
+      })}
+      {/* embeddings filter: many in, few through */}
+      <path d="M196 104 L238 132 V168 L196 196 Z" className="v-acc" />
+      <path d="M238 150 H300" className="v-acc v-flow" />
+      <Pulse path="M238 150 H300" dur={D} begin={0.9} travel={0.2} className="v-fill-acc" />
+      <Pulse path="M238 150 H300" dur={D} begin={2.6} travel={0.2} className="v-fill-acc" />
+      {/* the LLM explains the fit */}
+      <circle cx="324" cy="150" r="24" className="v-gold" />
+      <Ripple cx={324} cy={150} r={24} grow={14} dur={1.8} />
+      <circle cx="324" cy="150" r="6" className="v-fill-gold" />
+      <path d="M348 150 H392" className="v-gold v-flow" />
+      <Pulse path="M348 150 H392" dur={D} begin={1.5} travel={0.15} className="v-fill-gold" />
+      <Pulse path="M348 150 H392" dur={D} begin={3.2} travel={0.15} className="v-fill-gold" />
+      {/* WhatsApp alert */}
+      <rect x="392" y="124" width="62" height="44" rx="12" className="v-acc" />
+      <path d="M404 168 L398 182 L418 168" className="v-acc" />
+      <path d="M408 140 H440 M408 152 H428" className="v-dim" />
+      {/* every six hours */}
+      <circle cx="424" cy="58" r="22" className="v-dim" />
+      <path d="M424 58 V42" className="v-gold" strokeWidth="2.5">
+        <animateTransform attributeName="transform" type="rotate" values="0 424 58;360 424 58" dur="6s" repeatCount="indefinite" />
+      </path>
+      <text x="424" y="100" textAnchor="middle" className="v-text">
+        every 6 h
+      </text>
+    </>
+  );
+}
+
+/* ---------- DaStrings: a business picks a template site, claims it, and posts go out on their own ---------- */
+function DaStrings() {
+  const D = 6;
+  const cards = [40, 180, 320];
+  return (
+    <>
+      {cards.map((x, i) => (
+        <g key={x}>
+          <rect x={x} y="40" width="120" height="150" rx="12" className="v-dim" />
+          <path d={`M${x} 62 H${x + 120}`} className="v-dim" />
+          <circle cx={x + 12} cy="51" r="2.5" className="v-fill-dim" />
+          <circle cx={x + 22} cy="51" r="2.5" className="v-fill-dim" />
+          <rect x={x + 14} y="76" width="92" height="40" rx="6" className={i === 1 ? "v-acc" : "v-dim"} />
+          <path d={`M${x + 14} 132 H${x + 96} M${x + 14} 146 H${x + 76} M${x + 14} 160 H${x + 86}`} className="v-dim" />
+        </g>
+      ))}
+      {/* the claimed site */}
+      <rect x="180" y="40" width="120" height="150" rx="12" className="v-gold" strokeWidth="2.5" opacity="0">
+        <animate attributeName="opacity" values="0;0;1;1;0" keyTimes="0;0.3;0.34;0.9;1" dur={`${D}s`} repeatCount="indefinite" />
+      </rect>
+      <g opacity="0">
+        <animate attributeName="opacity" values="0;0;1;1;0" keyTimes="0;0.32;0.36;0.9;1" dur={`${D}s`} repeatCount="indefinite" />
+        <circle cx="290" cy="40" r="12" className="v-fill-gold" />
+        <path d="M284 40 l4 4 l8 -8" stroke="#0a0a0a" strokeWidth="2.5" fill="none" strokeLinecap="round" />
+      </g>
+      {/* the visitor's pointer */}
+      <circle r="7" className="v-acc" strokeWidth="2.5">
+        <animateMotion
+          path="M90 270 C150 250 210 180 240 120"
+          dur={`${D}s`}
+          repeatCount="indefinite"
+          keyPoints="0;1;1;0"
+          keyTimes="0;0.3;0.85;1"
+          calcMode="linear"
+        />
+      </circle>
+      {/* automated social posts, each with an email alert */}
+      {[300, 344, 388].map((x, i) => (
+        <g key={x}>
+          <rect x={x} y="236" width="30" height="30" rx="8" className="v-dim" />
+          <Pulse path={`M240 190 C250 230 ${x} 210 ${x + 15} 236`} dur={D} begin={2.4 + i * 0.4} travel={0.18} r={3} className="v-fill-gold" />
+        </g>
+      ))}
+      <rect x="436" y="240" width="30" height="22" rx="4" className="v-acc" />
+      <path d="M436 242 L451 254 L466 242" className="v-acc" />
+    </>
+  );
+}
+
+/* ---------- Benniepocket: savings land in each business's own pocket, kept apart ---------- */
+function Benniepocket() {
+  const D = 5;
+  const pockets = [60, 170, 280, 390];
+  return (
+    <>
+      {pockets.map((x, i) => (
+        <g key={x}>
+          {i > 0 && <path d={`M${x - 25} 60 V270`} className="v-dim v-flow" />}
+          <Pulse path={`M${x + 30} 20 L${x + 30} 200`} dur={D} begin={i * 0.7} travel={0.35} r={5} className="v-fill-gold" />
+          <Pulse path={`M${x + 30} 20 L${x + 30} 200`} dur={D} begin={i * 0.7 + 2.4} travel={0.35} r={5} className="v-fill-gold" />
+          <path d={`M${x} 110 V250 Q${x} 268 ${x + 18} 268 H${x + 42} Q${x + 60} 268 ${x + 60} 250 V110`} className="v-acc" />
+          <rect x={x + 6} y={262 - 40 - i * 12} width="48" height={40 + i * 12} rx="6" className="v-fill-acc" opacity="0.35">
+            <animate
+              attributeName="height"
+              values={`${20 + i * 8};${60 + i * 14};${20 + i * 8}`}
+              dur={`${D * 2}s`}
+              repeatCount="indefinite"
+            />
+            <animate
+              attributeName="y"
+              values={`${262 - 20 - i * 8};${262 - 60 - i * 14};${262 - 20 - i * 8}`}
+              dur={`${D * 2}s`}
+              repeatCount="indefinite"
+            />
+          </rect>
+        </g>
+      ))}
+    </>
+  );
+}
+
 const scenes: Record<VisualKind, { Scene: () => React.JSX.Element; still: number }> = {
   strings: { Scene: Strings, still: 1.6 },
   handgraph: { Scene: HandGraph, still: 2.6 },
@@ -632,6 +758,9 @@ const scenes: Record<VisualKind, { Scene: () => React.JSX.Element; still: number
   guardrail: { Scene: Guardrail, still: 1.3 },
   ippis: { Scene: Ippis, still: 3 },
   sisi: { Scene: Sisi, still: 0.5 },
+  autoapply: { Scene: AutoApply, still: 1.6 },
+  dastrings: { Scene: DaStrings, still: 3 },
+  benniepocket: { Scene: Benniepocket, still: 1.2 },
 };
 
 export function ProjectVisual({ kind }: { kind: VisualKind }) {

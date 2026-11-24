@@ -10,7 +10,7 @@ import { siteUrl } from "@/lib/content";
 export const metadata: Metadata = {
   title: "About",
   description:
-    "Excel Shogbola is a full-stack engineer in Lagos: founder of Lumenware Technologies and a fintech engineer at NOLT Finance.",
+    "Excel Shogbola is a full-stack engineer in Lagos: founder of Lumenware Technologies, verification officer and software developer at NOLT Finance.",
   alternates: { canonical: `${siteUrl}/about` },
 };
 

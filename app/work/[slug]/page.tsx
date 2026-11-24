@@ -73,6 +73,12 @@ export default async function CaseStudyPage({ params }: PageProps<"/work/[slug]"
             <span>{project.name}</span>
           </h1>
           <p className="hero-in mt-8 max-w-2xl text-xl text-muted md:text-2xl">{study.summary}</p>
+          {study.role && (
+            <p className="hero-in mt-6 max-w-2xl border-l-2 border-gold pl-5 text-lg text-ink/85">
+              <span className="text-gold">My role: </span>
+              {study.role}
+            </p>
+          )}
           {project.live && (
             <div className="hero-in mt-10">
               <Magnetic>
@@ -122,7 +128,7 @@ export default async function CaseStudyPage({ params }: PageProps<"/work/[slug]"
 
         <section className="border-b border-line py-20 md:py-28">
           <Reveal>
-            <Heading>What I built</Heading>
+            <Heading>{study.builtTitle ?? "What I built"}</Heading>
           </Reveal>
           <ul className="mt-12 grid gap-5 md:grid-cols-2">
             {study.built.map((b, k) => (

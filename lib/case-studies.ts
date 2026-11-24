@@ -12,6 +12,8 @@ export type ArchNode = {
 export type CaseStudy = {
   slug: string;
   summary: string;
+  role?: string; // Excel's part, when the work was a team effort
+  builtTitle?: string;
   problem: string[];
   built: { title: string; body: string }[];
   numbers: { value: string; label: string }[];
@@ -22,6 +24,8 @@ export type CaseStudy = {
 export const caseStudies: CaseStudy[] = [
   {
     slug: "strings-automation",
+    role: "I led a team of three (me, a backend developer and an infrastructure teammate): I set the plan, split ownership by area, reviewed all work through GitHub, and built the frontend.",
+    builtTitle: "What the team built",
     summary:
       "A multi-tenant platform that lets African businesses, starting with Nigerian microfinance banks, SMBs, clinics and estate agencies, reach their customers by email, SMS and WhatsApp from one place.",
     problem: [

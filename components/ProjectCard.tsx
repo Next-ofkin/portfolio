@@ -49,6 +49,7 @@ function Facts({ items }: { items?: string[] }) {
 }
 
 function Stack({ items }: { items: string[] }) {
+  if (!items.length) return null;
   return (
     <ul className="mt-6 flex flex-wrap gap-2" aria-label="Built with">
       {items.map((s) => (

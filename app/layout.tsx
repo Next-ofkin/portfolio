@@ -40,8 +40,8 @@ const person = JSON.stringify({
   description,
   address: { "@type": "PostalAddress", addressLocality: "Lagos", addressCountry: "NG" },
   worksFor: [
-    { "@type": "Organization", name: "Lumenware Technologies", description: "Founder" },
-    { "@type": "Organization", name: "NOLT Finance", description: "Fintech Engineer" },
+    { "@type": "Organization", name: "Lumenware Technologies", description: "Founder & Lead Developer" },
+    { "@type": "Organization", name: "NOLT Finance", description: "Verification Officer & Software Developer" },
   ],
   knowsAbout: [
     "Full-stack engineering",
