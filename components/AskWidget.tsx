@@ -12,24 +12,51 @@ const SUGGESTIONS = [
   "How did Excel find hidden debts in VerifyFlow?",
 ];
 
-// Turn links and email addresses in an answer into real links.
+// Turn markdown links, bare links and email addresses in an answer into real links.
+const SITE = /^https?:\/\/(www\.)?portfolio\.dastrings\.name\.ng/;
 function Linked({ text }: { text: string }) {
-  const parts = text.split(/(https?:\/\/[^\s)]+[^\s).,]|[\w.+-]+@[\w-]+\.[\w.]+[a-z])/gi);
+  const parts = text.split(/(\[[^\]\n]+\]\([^)\s]+\)|https?:\/\/[^\s)]+[^\s).,]|[\w.+-]+@[\w-]+\.[\w.]+[a-z])/gi);
+  const link = "underline decoration-gold underline-offset-2";
   return (
     <>
-      {parts.map((p, i) =>
-        /^https?:\/\//.test(p) ? (
-          <a key={i} href={p} className="break-all underline decoration-gold underline-offset-2">
-            {p.replace(/^https?:\/\/(www\.)?portfolio\.dastrings\.name\.ng/, "") || "/"}
-          </a>
-        ) : /@/.test(p) && /\.\w+$/.test(p) ? (
-          <a key={i} href={`mailto:${p}`} className="underline decoration-gold underline-offset-2">
-            {p}
-          </a>
-        ) : (
-          <Fragment key={i}>{p}</Fragment>
-        ),
-      )}
+      {parts.map((p, i) => {
+        const md = /^\[([^\]]+)\]\(([^)\s]+)\)$/.exec(p);
+        if (md) {
+          const href = md[2].startsWith("mailto:") || /^https?:|^\//.test(md[2]) ? md[2] : `/${md[2]}`;
+          const external = /^https?:/.test(href) && !SITE.test(href);
+          return (
+            <a
+              key={i}
+              href={href.replace(SITE, "") || "/"}
+              className={link}
+              {...(external ? { target: "_blank", rel: "noopener" } : {})}
+            >
+              {md[1]}
+            </a>
+          );
+        }
+        if (/^https?:\/\//.test(p)) {
+          const local = SITE.test(p);
+          return (
+            <a
+              key={i}
+              href={local ? p.replace(SITE, "") || "/" : p}
+              className={`break-all ${link}`}
+              {...(local ? {} : { target: "_blank", rel: "noopener" })}
+            >
+              {local ? p.replace(SITE, "") || "/" : p}
+            </a>
+          );
+        }
+        if (/@/.test(p) && /\.\w+$/.test(p)) {
+          return (
+            <a key={i} href={`mailto:${p}`} className={link}>
+              {p}
+            </a>
+          );
+        }
+        return <Fragment key={i}>{p}</Fragment>;
+      })}
     </>
   );
 }
@@ -158,7 +185,9 @@ export function AskWidget() {
           <div className="flex items-center justify-between border-b border-line px-5 py-4">
             <div>
               <p className="font-display text-lg font-semibold tracking-tight">Ask about Excel</p>
-              <p className="text-xs text-muted">An AI that answers from this site and Excel&apos;s code. It can be wrong.</p>
+              <p className="text-xs text-muted">
+                An AI that answers from this site and Excel&apos;s code. It can be wrong.
+              </p>
             </div>
             <button
               type="button"
@@ -179,7 +208,8 @@ export function AskWidget() {
             {msgs.length === 0 && (
               <div>
                 <p className="text-muted">
-                  Hi. Ask me about Excel&apos;s work, skills or projects, even how he built something. For anything else, the{" "}
+                  Hi. Ask me about Excel&apos;s work, skills or projects, even how he built something. For anything
+                  else, the{" "}
                   <Link href="/contact" className="underline decoration-gold underline-offset-2">
                     Contact page
                   </Link>{" "}
@@ -202,12 +232,19 @@ export function AskWidget() {
             )}
             {msgs.map((m, i) =>
               m.role === "user" ? (
-                <p key={i} className="ml-auto max-w-[85%] rounded-2xl rounded-br-md bg-accent-strong px-4 py-2.5 text-white">
+                <p
+                  key={i}
+                  className="ml-auto max-w-[85%] rounded-2xl rounded-br-md bg-accent-strong px-4 py-2.5 text-white"
+                >
                   {m.content}
                 </p>
               ) : (
                 <div key={i} className="max-w-[96%] leading-relaxed text-ink/90">
-                  {m.content ? <Answer text={m.content} /> : <span className="text-muted">Looking through Excel&apos;s work…</span>}
+                  {m.content ? (
+                    <Answer text={m.content} />
+                  ) : (
+                    <span className="text-muted">Looking through Excel&apos;s work…</span>
+                  )}
                 </div>
               ),
             )}
