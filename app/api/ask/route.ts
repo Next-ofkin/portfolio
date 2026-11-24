@@ -1,4 +1,4 @@
-import { searchCode, type Hit } from "@/lib/code-search";
+import { indexStats, searchCode, type Hit } from "@/lib/code-search";
 import { profile, siteUrl } from "@/lib/content";
 import { cv } from "@/lib/cv";
 import { siteKnowledge } from "@/lib/site-knowledge";
@@ -80,7 +80,7 @@ function cleanMessages(raw: unknown): Msg[] | null {
 const fail = (error: string, status: number) =>
   new Response(JSON.stringify({ ok: false, error }), { status, headers: { "Content-Type": "application/json" } });
 
-export async function POST(request: Request) {
+async function handle(request: Request) {
   const key = process.env.OPENROUTER_API_KEY;
   if (!key) return fail("The assistant isn't switched on yet.", 503);
   const body = (await request.json().catch(() => null)) as { messages?: unknown } | null;
@@ -121,8 +121,9 @@ export async function POST(request: Request) {
     return fail("The assistant couldn't answer right now. Please try again in a moment.", 502);
   }
   if (!upstream.ok || !upstream.body) {
-    console.error("Assistant: OpenRouter returned", upstream.status, await upstream.text().catch(() => ""));
-    return fail("The assistant couldn't answer right now. Please try again in a moment.", 502);
+    const detail = await upstream.text().catch(() => "");
+    console.error("Assistant: OpenRouter returned", upstream.status, detail);
+    return fail(`The assistant couldn't answer right now (OpenRouter ${upstream.status}: ${reason(detail)}).`, 502);
   }
 
   // Turn OpenRouter's server-sent events into a plain text stream of the answer.
@@ -146,7 +147,14 @@ export async function POST(request: Request) {
             return;
           }
           try {
-            const text = JSON.parse(data)?.choices?.[0]?.delta?.content;
+            const json = JSON.parse(data);
+            if (json?.error) {
+              console.error("Assistant: OpenRouter stream error", json.error);
+              controller.enqueue(encoder.encode(`\n[The assistant hit a problem: ${reason(JSON.stringify(json))}]`));
+              controller.close();
+              return;
+            }
+            const text = json?.choices?.[0]?.delta?.content;
             if (typeof text === "string" && text) controller.enqueue(encoder.encode(text));
           } catch {
             /* keep-alive comments and partial lines are skipped */
@@ -160,4 +168,45 @@ export async function POST(request: Request) {
     },
   });
   return new Response(stream, { headers: { "Content-Type": "text/plain; charset=utf-8", "Cache-Control": "no-store" } });
+}
+
+// A short, safe description of an OpenRouter error (never includes the key).
+function reason(detail: string) {
+  try {
+    const j = JSON.parse(detail);
+    const m = j?.error?.message ?? j?.message;
+    if (typeof m === "string") return m.slice(0, 160);
+  } catch {
+    /* not JSON */
+  }
+  return detail.replace(/sk-[\w-]+/g, "[key]").slice(0, 160) || "no details";
+}
+
+export async function POST(request: Request) {
+  try {
+    return await handle(request);
+  } catch (e) {
+    console.error("Assistant: unexpected error", e);
+    return fail(`The assistant hit an error (${e instanceof Error ? e.message.slice(0, 120) : "unknown"}).`, 500);
+  }
+}
+
+// Status check: open /api/ask in a browser. Shows whether it's set up, never the keys.
+export async function GET() {
+  let index: ReturnType<typeof indexStats> | { error: string };
+  try {
+    index = indexStats();
+  } catch (e) {
+    index = { error: e instanceof Error ? e.message : "unknown" };
+  }
+  return Response.json(
+    {
+      openrouterKey: process.env.OPENROUTER_API_KEY ? "set" : "missing",
+      githubToken: process.env.GITHUB_TOKEN ? "set" : "missing",
+      model: MODEL,
+      cv: cv.trim() ? "loaded" : "empty",
+      codeIndex: index,
+    },
+    { headers: { "Cache-Control": "no-store" } },
+  );
 }

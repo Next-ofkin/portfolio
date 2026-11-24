@@ -110,7 +110,7 @@ export function AskWidget() {
       });
       if (!res.ok || !res.body) {
         const data = (await res.json().catch(() => ({}))) as { error?: string };
-        throw new Error(data.error ?? "The assistant couldn't answer right now.");
+        throw new Error(data.error ?? `The assistant couldn't answer right now (error ${res.status}).`);
       }
       const reader = res.body.getReader();
       const decoder = new TextDecoder();
@@ -121,7 +121,7 @@ export function AskWidget() {
         answer += decoder.decode(value, { stream: true });
         setMsgs([...history, { role: "assistant", content: answer }]);
       }
-      if (!answer.trim()) throw new Error("The assistant couldn't answer right now.");
+      if (!answer.trim()) throw new Error("The assistant sent an empty answer. Please try again.");
     } catch (e) {
       setMsgs(history.slice(0, -1));
       setInput(q);
