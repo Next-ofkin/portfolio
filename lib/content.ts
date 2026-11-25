@@ -91,14 +91,15 @@ export const projects: Project[] = [
     name: "AI Model Royalty Protocol",
     kind: "On-chain licensing and royalties for AI models",
     outcome:
-      "AI builders register a model and set a price per inference. Users buy credits in USDC, and one smart contract pays the creator 98% in the same transaction. Runs on Base, Ethereum and Polygon.",
+      "AI builders register a model and set a price per inference. Users buy credits in USDC, and one smart contract pays the creator 98% in the same transaction. Live demo on Base, Ethereum and Polygon.",
     stack: ["Solidity", "OpenZeppelin", "Next.js 14", "TypeScript", "wagmi + viem", "RainbowKit", "Tailwind CSS"],
     visual: "royalty",
     layout: "feature",
     span: "md:col-span-12",
     github: "https://github.com/Next-ofkin/ai-model-royalty-protocol",
+    live: "https://ai-model-royalty-protocol.vercel.app",
     caseStudy: true,
-    facts: ["98% to the creator, same transaction", "3 EVM chains", "Open source"],
+    facts: ["98% to the creator, same transaction", "3 EVM chains", "Live demo, open source"],
   },
   {
     slug: "verifyflow",
