@@ -79,18 +79,25 @@ export default async function CaseStudyPage({ params }: PageProps<"/work/[slug]"
               {study.role}
             </p>
           )}
-          {project.live && (
-            <div className="hero-in mt-10">
-              <Magnetic>
-                <a
-                  href={project.live}
-                  target="_blank"
-                  rel="noopener"
-                  className="inline-flex rounded-full bg-accent-strong px-7 py-3.5 font-medium text-white transition-colors hover:bg-accent"
-                >
-                  Try it live<span className="sr-only"> (opens in a new tab)</span>
+          {(project.live || project.github) && (
+            <div className="hero-in mt-10 flex flex-wrap items-center gap-x-8 gap-y-4">
+              {project.live && (
+                <Magnetic>
+                  <a
+                    href={project.live}
+                    target="_blank"
+                    rel="noopener"
+                    className="inline-flex rounded-full bg-accent-strong px-7 py-3.5 font-medium text-white transition-colors hover:bg-accent"
+                  >
+                    Try it live<span className="sr-only"> (opens in a new tab)</span>
+                  </a>
+                </Magnetic>
+              )}
+              {project.github && (
+                <a href={project.github} target="_blank" rel="noopener" className={linkClass}>
+                  View the code on GitHub<span className="sr-only"> (opens in a new tab)</span>
                 </a>
-              </Magnetic>
+              )}
             </div>
           )}
         </header>
@@ -180,7 +187,9 @@ export default async function CaseStudyPage({ params }: PageProps<"/work/[slug]"
           <Reveal>
             <Heading>Want the full walkthrough?</Heading>
             <p className="mt-5 max-w-xl text-lg text-muted">
-              The code is private, but I&apos;m happy to show it running and talk through the decisions.
+              {project.private
+                ? "The code is private, but I'm happy to show it running and talk through the decisions."
+                : "The code is open on GitHub, and I'm happy to show it running and talk through the decisions."}
             </p>
             <div className="mt-8">
               <Magnetic>

@@ -231,4 +231,70 @@ export const caseStudies: CaseStudy[] = [
       { group: "Realtime", items: ["Supabase Realtime", "QR pairing"] },
     ],
   },
+  {
+    slug: "ai-model-royalty-protocol",
+    summary:
+      "A smart contract and dApp that let AI builders sell inference credits for their models and get paid the moment a user buys. No invoices, no payout cycle: the contract splits every payment between the creator and the protocol in the same transaction.",
+    problem: [
+      "Independent AI builders who fine-tune a useful model have few fair ways to charge for it. Marketplaces hold the money, take a large cut and pay out weeks later, and usage numbers live in someone else's database.",
+      "I wanted the rules of the deal, the price, the split and the usage, written into one contract that anyone can read, so a creator is paid by code rather than by a platform's goodwill.",
+    ],
+    built: [
+      {
+        title: "One contract that does the money",
+        body: "Creators call registerModel with an IPFS metadata link and a price per inference. Users approve USDC once and call purchaseInferences; the contract pulls the exact cost, sends 98% to the creator and a 2% fee to the treasury, then records the credits.",
+      },
+      {
+        title: "Usage you can audit",
+        body: "Credits are stored on-chain per model and per wallet. Each API call burns one with consumeInference, so a balance can never be spent twice and every inference sold is public.",
+      },
+      {
+        title: "Guard rails from OpenZeppelin",
+        body: "ReentrancyGuard on the payment path, Ownable admin controls, and a protocol fee the owner can change but never raise above 10%. Creators can switch off their own model, and nobody else can.",
+      },
+      {
+        title: "A dApp that works before deployment",
+        body: "A Next.js 14 front end with RainbowKit, wagmi and viem on Base, Ethereum and Polygon. With no contract address set it runs as a demo: the wallet signs a free, gasless receipt and the 98 / 2 split is shown for every purchase. Set an address and the same buttons run approve and purchaseInferences for real.",
+      },
+      {
+        title: "A dashboard for buyers",
+        body: "Credit balances per model, total USDC spent, royalties paid out and a running feed of each split, kept per wallet and per chain.",
+      },
+    ],
+    numbers: [
+      { value: "98%", label: "of every payment to the creator, in the same transaction" },
+      { value: "2%", label: "protocol fee, hard-capped at 10% in the contract" },
+      { value: "3", label: "EVM chains: Base, Ethereum and Polygon" },
+      { value: "0", label: "middlemen holding the money" },
+    ],
+    arch: {
+      caption:
+        "The browser talks straight to the chain. The contract takes USDC from the buyer, pays the creator and the treasury, and records credits, all in one transaction.",
+      nodes: [
+        { id: "dapp", label: "dApp", sub: "Next.js 14", col: 0, row: 1, tone: "accent" },
+        { id: "wallet", label: "Wallet", sub: "RainbowKit", col: 1, row: 0, tone: "dim" },
+        { id: "rpc", label: "wagmi + viem", sub: "reads and writes", col: 1, row: 2, tone: "dim" },
+        { id: "contract", label: "Royalty contract", sub: "Solidity 0.8.20", col: 2, row: 1, tone: "accent" },
+        { id: "usdc", label: "USDC", sub: "ERC-20", col: 3, row: 0, tone: "dim" },
+        { id: "creator", label: "Creator", sub: "98% royalty", col: 4, row: 0, tone: "gold" },
+        { id: "treasury", label: "Treasury", sub: "2% fee", col: 4, row: 1, tone: "gold" },
+        { id: "credits", label: "Credits", sub: "on-chain balance", col: 3, row: 2, tone: "gold" },
+      ],
+      edges: [
+        ["dapp", "wallet"],
+        ["dapp", "rpc"],
+        ["wallet", "contract"],
+        ["rpc", "contract"],
+        ["contract", "usdc"],
+        ["usdc", "creator"],
+        ["contract", "treasury"],
+        ["contract", "credits"],
+      ],
+    },
+    stack: [
+      { group: "Contract", items: ["Solidity 0.8.20", "OpenZeppelin", "ERC-20 (USDC)", "IPFS metadata"] },
+      { group: "Front end", items: ["Next.js 14", "TypeScript", "Tailwind CSS", "RainbowKit", "wagmi", "viem"] },
+      { group: "Networks and hosting", items: ["Base", "Ethereum", "Polygon", "Vercel"] },
+    ],
+  },
 ];

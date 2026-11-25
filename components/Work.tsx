@@ -19,11 +19,11 @@ export function ProjectGrid({ items }: { items: Project[] }) {
   );
 }
 
-// Home page: the three projects with case studies, and a way into the full list.
+// Home page: the projects with case studies, and a way into the full list.
 export function FeaturedWork() {
   const featured = all.filter((p) => p.caseStudy);
   return (
-    <Section id="work" title="Selected work" intro="Three products I'd show you first. Each has a full case study.">
+    <Section id="work" title="Selected work" intro="Four products I'd show you first. Each has a full case study.">
       <ProjectGrid items={featured} />
       <Reveal className="mt-12">
         <Link href="/work" className={`text-lg ${linkClass}`}>

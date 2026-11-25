@@ -33,7 +33,7 @@ export const about = {
 };
 
 export type VisualKind =
-  "strings" | "handgraph" | "verifyflow" | "loanpilot" | "applied" | "oracle" | "guardrail" | "ippis" | "sisi" | "autoapply" | "dastrings" | "benniepocket";
+  "strings" | "handgraph" | "verifyflow" | "loanpilot" | "applied" | "oracle" | "guardrail" | "ippis" | "sisi" | "autoapply" | "dastrings" | "benniepocket" | "royalty";
 
 export type Project = {
   slug: string;
@@ -85,6 +85,20 @@ export const projects: Project[] = [
     live: "https://hand-graph.vercel.app",
     caseStudy: true,
     facts: ["Webcam hand control", "3D code city", "AI presenter"],
+  },
+  {
+    slug: "ai-model-royalty-protocol",
+    name: "AI Model Royalty Protocol",
+    kind: "On-chain licensing and royalties for AI models",
+    outcome:
+      "AI builders register a model and set a price per inference. Users buy credits in USDC, and one smart contract pays the creator 98% in the same transaction. Runs on Base, Ethereum and Polygon.",
+    stack: ["Solidity", "OpenZeppelin", "Next.js 14", "TypeScript", "wagmi + viem", "RainbowKit", "Tailwind CSS"],
+    visual: "royalty",
+    layout: "feature",
+    span: "md:col-span-12",
+    github: "https://github.com/Next-ofkin/ai-model-royalty-protocol",
+    caseStudy: true,
+    facts: ["98% to the creator, same transaction", "3 EVM chains", "Open source"],
   },
   {
     slug: "verifyflow",

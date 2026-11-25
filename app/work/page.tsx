@@ -16,7 +16,7 @@ export default function WorkPage() {
     <SiteShell>
       <PageHeader
         title="Work"
-        intro="Products I've designed and shipped, from messaging infrastructure to fintech compliance. Three have full case studies."
+        intro="Products I've designed and shipped, from messaging infrastructure to fintech compliance. Four have full case studies."
       />
       <div className="pb-24 md:pb-36">
         <ProjectGrid items={projects} />

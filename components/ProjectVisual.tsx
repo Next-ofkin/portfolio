@@ -748,6 +748,64 @@ function Benniepocket() {
   );
 }
 
+/* ---------- AI Model Royalty Protocol: wallets pay USDC into one contract, which splits it 98 / 2 ---------- */
+function Royalty() {
+  const D = 4.2;
+  const wallets = [70, 150, 230];
+  const hex = "M240 104 L280 127 L280 173 L240 196 L200 173 L200 127 Z";
+  return (
+    <>
+      {wallets.map((y, i) => {
+        const d = `M118 ${y} C160 ${y} 168 150 200 150`;
+        return (
+          <g key={y}>
+            <rect x="34" y={y - 16} width="84" height="32" rx="16" className="v-dim" />
+            <rect x="34" y={y - 16} width="84" height="32" rx="16" className="v-fill-acc" opacity="0">
+              <Flash at={0} dur={D} begin={i * 1.4} peak={0.22} />
+            </rect>
+            <text x="76" y={y + 4} textAnchor="middle" className="v-text">
+              USDC
+            </text>
+            <path d={d} className="v-acc v-flow" />
+            <Pulse path={d} dur={D} begin={i * 1.4} travel={0.3} />
+          </g>
+        );
+      })}
+      <Ripple cx={240} cy={150} r={40} dur={1.4} />
+      <path d={hex} className="v-acc" />
+      <text x="240" y="154" textAnchor="middle" className="v-text">
+        Contract
+      </text>
+      {/* creator share: the thick line */}
+      <path d="M280 140 C320 140 320 96 360 96" className="v-gold v-flow" strokeWidth="3" />
+      <Pulse path="M280 140 C320 140 320 96 360 96" dur={D} begin={0.9} travel={0.25} r={4.5} className="v-fill-gold" />
+      <rect x="360" y="74" width="92" height="44" rx="10" className="v-dim" />
+      <rect x="360" y="74" width="92" height="44" rx="10" className="v-fill-gold" opacity="0">
+        <Flash at={0.3} dur={D} begin={0.9} peak={0.3} />
+      </rect>
+      <text x="406" y="94" textAnchor="middle" className="v-text">
+        Creator
+      </text>
+      <text x="406" y="110" textAnchor="middle" className="v-text-gold">
+        98%
+      </text>
+      {/* protocol fee: the thin line */}
+      <path d="M280 162 C320 162 320 206 360 206" className="v-dim" />
+      <Pulse path="M280 162 C320 162 320 206 360 206" dur={D} begin={0.9} travel={0.25} r={2} />
+      <rect x="360" y="186" width="92" height="40" rx="10" className="v-dim" />
+      <text x="406" y="204" textAnchor="middle" className="v-text">
+        Protocol
+      </text>
+      <text x="406" y="219" textAnchor="middle" className="v-text">
+        2%
+      </text>
+      <text x="240" y="262" textAnchor="middle" className="v-text">
+        one transaction · credits on-chain
+      </text>
+    </>
+  );
+}
+
 const scenes: Record<VisualKind, { Scene: () => React.JSX.Element; still: number }> = {
   strings: { Scene: Strings, still: 1.6 },
   handgraph: { Scene: HandGraph, still: 2.6 },
@@ -761,6 +819,7 @@ const scenes: Record<VisualKind, { Scene: () => React.JSX.Element; still: number
   autoapply: { Scene: AutoApply, still: 1.6 },
   dastrings: { Scene: DaStrings, still: 3 },
   benniepocket: { Scene: Benniepocket, still: 1.2 },
+  royalty: { Scene: Royalty, still: 1.3 },
 };
 
 export function ProjectVisual({ kind }: { kind: VisualKind }) {
