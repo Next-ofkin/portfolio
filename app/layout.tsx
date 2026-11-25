@@ -14,6 +14,15 @@ export const metadata: Metadata = {
   title: { default: title, template: `%s | ${profile.name}` },
   description,
   authors: [{ name: profile.name, url: siteUrl }],
+  keywords: [
+    "Excel Shogbola",
+    "Excel L. Shogbola",
+    "Exceldastrings",
+    "DaStrings",
+    "full-stack engineer Lagos",
+    "fintech engineer Nigeria",
+    "NestJS developer Nigeria",
+  ],
   creator: profile.name,
   openGraph: {
     type: "profile",
@@ -33,6 +42,10 @@ const person = JSON.stringify({
   "@context": "https://schema.org",
   "@type": "Person",
   name: profile.name,
+  // Other names people search for him by
+  alternateName: ["Excel L. Shogbola", "Exceldastrings", "DaStrings", "Next-ofkin"],
+  givenName: "Excel",
+  familyName: "Shogbola",
   jobTitle: profile.title,
   url: siteUrl,
   image: `${siteUrl}/excel-shogbola.webp`,
@@ -54,7 +67,7 @@ const person = JSON.stringify({
     "Loan verification",
     "WhatsApp automation",
   ],
-  sameAs: [profile.github, profile.linkedin, profile.x],
+  sameAs: [profile.github, profile.linkedin, profile.x, "https://www.facebook.com/Exceldastrings", "https://dastrings.name.ng"],
 });
 
 export const viewport: Viewport = {
