@@ -16,7 +16,7 @@ const canWebGL = () => {
 };
 const noop = () => () => {};
 
-// Shows the 3D cartoon once the portrait scrolls near, with a switch back to the real photo.
+// Shows the 3D model once the portrait scrolls near, with a switch back to the real photo.
 export function PortraitSwitch({ photo }: { photo: ReactNode }) {
   const ref = useRef<HTMLDivElement>(null);
   // false on the server and during hydration, then whether this browser can draw 3D
@@ -25,7 +25,9 @@ export function PortraitSwitch({ photo }: { photo: ReactNode }) {
   const ready = supported && !failed;
   const [mode, setMode] = useState<"photo" | "3d">("3d");
   const [near, setNear] = useState(false);
+  const [loaded, setLoaded] = useState(false);
   const fail = useCallback(() => setFailed(true), []);
+  const onReady = useCallback(() => setLoaded(true), []);
 
   useEffect(() => {
     if (!supported) return;
@@ -43,13 +45,18 @@ export function PortraitSwitch({ photo }: { photo: ReactNode }) {
   }, [supported]);
 
   const show3d = ready && mode === "3d";
+  // the photo stays up until the model has downloaded
 
   return (
     <div ref={ref} className="absolute inset-0">
-      <div className={`absolute inset-0 transition-opacity duration-500 ${show3d ? "opacity-0" : "opacity-100"}`}>
+      <div className={`absolute inset-0 transition-opacity duration-500 ${show3d && loaded ? "opacity-0" : "opacity-100"}`}>
         {photo}
       </div>
-      {show3d && near && <Avatar3D onFail={fail} />}
+      {show3d && near && (
+        <div className={`absolute inset-0 transition-opacity duration-700 ${loaded ? "opacity-100" : "opacity-0"}`}>
+          <Avatar3D onFail={fail} onReady={onReady} />
+        </div>
+      )}
       {ready && (
         <div
           role="group"

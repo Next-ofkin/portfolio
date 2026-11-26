@@ -2,8 +2,8 @@
 
 import { useEffect, useRef, useState } from "react";
 
-// The 3D cartoon Excel. three.js is loaded only when this mounts, and the scene pauses off screen.
-export function Avatar3D({ onFail }: { onFail: () => void }) {
+// Excel in 3D. three.js and the model load only when this mounts, and the scene pauses off screen.
+export function Avatar3D({ onFail, onReady }: { onFail: () => void; onReady: () => void }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [hi, setHi] = useState(false);
 
@@ -23,6 +23,8 @@ export function Avatar3D({ onFail }: { onFail: () => void }) {
             window.clearTimeout(timer);
             timer = window.setTimeout(() => setHi(false), 6000);
           },
+          onReady,
+          onError: onFail,
         });
       })
       .catch(onFail);
@@ -31,7 +33,7 @@ export function Avatar3D({ onFail }: { onFail: () => void }) {
       window.clearTimeout(timer);
       handle?.dispose();
     };
-  }, [onFail]);
+  }, [onFail, onReady]);
 
   return (
     <>
@@ -39,7 +41,7 @@ export function Avatar3D({ onFail }: { onFail: () => void }) {
         ref={canvasRef}
         className="absolute inset-0 h-full w-full cursor-grab touch-pan-y active:cursor-grabbing"
         role="img"
-        aria-label="A 3D cartoon of Excel in a black polo, arms folded. He follows your pointer; tap him to say hi, drag to turn him."
+        aria-label="A 3D model of Excel, head and shoulders. He follows your pointer; tap him to say hi, drag to turn him."
       />
       {hi && (
         <div className="absolute bottom-20 left-1/2 z-10 w-[min(18rem,85%)] -translate-x-1/2 rounded-2xl border border-line-strong bg-surface/95 px-4 py-3 text-center shadow-lg backdrop-blur">
