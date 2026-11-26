@@ -104,6 +104,13 @@ export function AskWidget() {
   const toggle = useRef<HTMLButtonElement>(null);
   const log = useRef<HTMLDivElement>(null);
 
+  // The 3D Excel's "Ask me anything" opens this panel.
+  useEffect(() => {
+    const openIt = () => setOpen(true);
+    window.addEventListener("ask:open", openIt);
+    return () => window.removeEventListener("ask:open", openIt);
+  }, []);
+
   useEffect(() => {
     if (!open) return;
     field.current?.focus();

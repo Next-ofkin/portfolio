@@ -1,5 +1,6 @@
 import Image from "next/image";
 import photo from "@/public/excel-shogbola.webp";
+import { PortraitSwitch } from "./PortraitSwitch";
 
 // The portrait sits in front of the same six strings as the hero, lit from behind so the black shirt
 // still reads on the dark page.
@@ -33,12 +34,16 @@ export function Portrait() {
           />
         ))}
       </svg>
-      <Image
-        src={photo}
-        alt="Excel Shogbola, arms folded, smiling and looking off to the side"
-        placeholder="blur"
-        sizes="(min-width: 768px) 40vw, 92vw"
-        className="absolute inset-x-0 bottom-0 h-auto w-full"
+      <PortraitSwitch
+        photo={
+          <Image
+            src={photo}
+            alt="Excel Shogbola, arms folded, smiling and looking off to the side"
+            placeholder="blur"
+            sizes="(min-width: 768px) 40vw, 92vw"
+            className="absolute inset-x-0 bottom-0 h-auto w-full"
+          />
+        }
       />
     </figure>
   );
