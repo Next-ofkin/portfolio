@@ -104,9 +104,13 @@ export function AskWidget() {
   const toggle = useRef<HTMLButtonElement>(null);
   const log = useRef<HTMLDivElement>(null);
 
-  // The 3D Excel's "Ask me anything" opens this panel.
+  // The 3D Excel (portrait and floating buddy) opens this panel, optionally with a question ready to send.
   useEffect(() => {
-    const openIt = () => setOpen(true);
+    const openIt = (e: Event) => {
+      setOpen(true);
+      const prefill = (e as CustomEvent<{ prefill?: string } | undefined>).detail?.prefill;
+      if (prefill) setInput((cur) => cur || prefill);
+    };
     window.addEventListener("ask:open", openIt);
     return () => window.removeEventListener("ask:open", openIt);
   }, []);

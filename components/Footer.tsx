@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { nav, profile } from "@/lib/content";
+import { BuddyReturn } from "./Buddy";
 import { Monogram } from "./Monogram";
 
 export function Footer() {
@@ -51,6 +52,9 @@ export function Footer() {
         <div className="flex items-center gap-4">
           <Monogram className="h-8 w-auto" />
           <p className="text-sm text-muted">&copy; 2026 {profile.name}</p>
+        </div>
+        <div className="text-sm">
+          <BuddyReturn />
         </div>
         <p className="text-sm text-muted">Built with precision in Lagos</p>
       </div>

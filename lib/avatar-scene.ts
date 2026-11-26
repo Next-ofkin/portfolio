@@ -6,8 +6,17 @@ import { MeshoptDecoder } from "three/examples/jsm/libs/meshopt_decoder.module.j
 // lowered here; the grey tee is darkened to his usual black. Head and eyes follow the pointer, he blinks
 // and breathes, a tap makes him smile and nod, and a drag turns him. Loaded only when it scrolls into view.
 
-export type AvatarHandle = { dispose: () => void };
-type Options = { reduceMotion: boolean; onTap: () => void; onReady: () => void; onError: (e: unknown) => void };
+export type AvatarHandle = { dispose: () => void; wave: () => void };
+type Options = {
+  reduceMotion: boolean;
+  onTap: () => void;
+  onReady: () => void;
+  onError: (e: unknown) => void;
+  // "portrait": head and shoulders in a tall frame. "buddy": a small floating bust with room for a wave.
+  framing?: "portrait" | "buddy";
+  // drag to turn him (portrait only; the buddy is a button)
+  drag?: boolean;
+};
 
 const MODEL_URL = "/avatar/excel.glb";
 
@@ -20,7 +29,7 @@ function setMorph(morphs: Morphs, name: string, v: number) {
   }
 }
 
-// Point a bone along a world-space direction (used once, to take the arms out of the T-pose).
+// Point a bone along a world-space direction (used to pose the arms out of the T-pose).
 function aim(bone: THREE.Object3D, child: THREE.Object3D, target: THREE.Vector3) {
   bone.parent?.updateMatrixWorld(true);
   bone.updateMatrixWorld(true);
@@ -85,6 +94,9 @@ export function createAvatar(canvas: HTMLCanvasElement, opts: Options): AvatarHa
   let spine: THREE.Object3D | undefined;
   let spineRest = new THREE.Quaternion();
   let model: THREE.Object3D | null = null;
+  let poseWave: ((lift: number, swing: number) => void) | null = null;
+  const buddy = opts.framing === "buddy";
+  const canDrag = opts.drag ?? !buddy;
 
   const loader = new GLTFLoader();
   loader.setMeshoptDecoder(MeshoptDecoder);
@@ -111,6 +123,31 @@ export function createAvatar(canvas: HTMLCanvasElement, opts: Options): AvatarHa
         const hand = B(`${side}Hand`);
         if (arm && fore) aim(arm, fore, new THREE.Vector3(sx * 0.18, -1, 0.05));
         if (fore && hand) aim(fore, hand, new THREE.Vector3(sx * 0.08, -1, 0.35));
+      }
+      model.updateMatrixWorld(true);
+      // The right arm's wave: rest, raised, and the forearm swinging either way.
+      {
+        const arm = B("RightArm");
+        const fore = B("RightForeArm");
+        const hand = B("RightHand");
+        if (arm && fore && hand) {
+          const restArm = arm.quaternion.clone();
+          const restFore = fore.quaternion.clone();
+          aim(arm, fore, new THREE.Vector3(-0.5, 0.1, 0.6));
+          const upArm = arm.quaternion.clone();
+          aim(fore, hand, new THREE.Vector3(-0.15, 1, 0.2));
+          const foreA = fore.quaternion.clone();
+          aim(fore, hand, new THREE.Vector3(0.3, 1, 0.3));
+          const foreB = fore.quaternion.clone();
+          arm.quaternion.copy(restArm);
+          fore.quaternion.copy(restFore);
+          const tmp = new THREE.Quaternion();
+          poseWave = (lift, swing) => {
+            arm.quaternion.slerpQuaternions(restArm, upArm, lift);
+            tmp.slerpQuaternions(foreA, foreB, swing);
+            fore.quaternion.slerpQuaternions(restFore, tmp, lift);
+          };
+        }
       }
       model.updateMatrixWorld(true);
       turnNeck = turner(B("Neck"));
@@ -140,9 +177,14 @@ export function createAvatar(canvas: HTMLCanvasElement, opts: Options): AvatarHa
     const h = canvas.clientHeight || 1;
     renderer.setSize(w, h, false);
     camera.aspect = w / h;
-    const z = w / h < 0.75 ? 2.2 : 2.0;
-    camera.position.set(0, 1.55, z);
-    camera.lookAt(0, 1.46, 0);
+    if (buddy) {
+      camera.position.set(0, 1.6, 2.05);
+      camera.lookAt(0, 1.52, 0);
+    } else {
+      const z = w / h < 0.75 ? 2.2 : 2.0;
+      camera.position.set(0, 1.55, z);
+      camera.lookAt(0, 1.46, 0);
+    }
     camera.updateProjectionMatrix();
   };
   resize();
@@ -159,12 +201,14 @@ export function createAvatar(canvas: HTMLCanvasElement, opts: Options): AvatarHa
   let spinVel = 0;
   let drag: { x: number; moved: number } | null = null;
   let joy = 0; // 1 right after a tap, fades out
+  let waveT = -1; // seconds into a wave, or -1
+  const WAVE = 2.2;
 
   const onMove = (e: PointerEvent) => {
     const r = canvas.getBoundingClientRect();
     look.x = Math.max(-1, Math.min(1, (e.clientX - (r.left + r.width / 2)) / (window.innerWidth / 2)));
     look.y = Math.max(-1, Math.min(1, (e.clientY - (r.top + r.height * 0.3)) / (window.innerHeight / 2)));
-    if (drag) {
+    if (drag && canDrag) {
       const dx = e.clientX - drag.x;
       drag.x = e.clientX;
       drag.moved += Math.abs(dx);
@@ -179,6 +223,7 @@ export function createAvatar(canvas: HTMLCanvasElement, opts: Options): AvatarHa
   const onUp = () => {
     if (drag && drag.moved < 6) {
       joy = 1;
+      waveT = 0;
       opts.onTap();
       if (!running && ready) {
         // reduced motion: show the smile as a still
@@ -236,6 +281,18 @@ export function createAvatar(canvas: HTMLCanvasElement, opts: Options): AvatarHa
     turnEyeL?.(cur.y * 0.12, cur.x * 0.18);
     turnEyeR?.(cur.y * 0.12, cur.x * 0.18);
 
+    // wave: lift, three swings, lower
+    if (waveT >= 0 && poseWave) {
+      waveT += dt;
+      const lift = Math.min(1, waveT / 0.35, Math.max(0, (WAVE - waveT) / 0.4));
+      const e = lift * lift * (3 - 2 * lift);
+      poseWave(e, 0.5 + 0.5 * Math.sin(waveT * 11));
+      if (waveT >= WAVE) {
+        poseWave(0, 0.5);
+        waveT = -1;
+      }
+    }
+
     // breathe
     if (spine) {
       sq.setFromEuler(se.set(Math.sin(t * 1.5) * 0.012, 0, 0));
@@ -275,6 +332,11 @@ export function createAvatar(canvas: HTMLCanvasElement, opts: Options): AvatarHa
   io.observe(canvas);
 
   return {
+    wave() {
+      if (!running) return;
+      waveT = 0;
+      joy = Math.max(joy, 0.6);
+    },
     dispose() {
       disposed = true;
       stop();
